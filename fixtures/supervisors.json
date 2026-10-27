@@ -1,0 +1,104 @@
+[
+  {
+    "user_id": 11,
+    "competencies": [
+      "Informācijas meklēšana",
+      "Dabiskās valodas apstrāde"
+    ],
+    "keywords": [
+      "meklēšana",
+      "retrieval",
+      "semantic",
+      "semantiskā",
+      "RAG"
+    ],
+    "available": true,
+    "capacity": 3,
+    "synthetic": true,
+    "institution": "BakaBaka demonstrācija"
+  },
+  {
+    "user_id": 12,
+    "competencies": [
+      "Programmatūras arhitektūra",
+      "Tīmekļa sistēmas"
+    ],
+    "keywords": [
+      "django",
+      "arhitektūra",
+      "datubāzes",
+      "web"
+    ],
+    "available": true,
+    "capacity": 3,
+    "synthetic": true,
+    "institution": "BakaBaka demonstrācija"
+  },
+  {
+    "user_id": 13,
+    "competencies": [
+      "Cilvēka un datora mijiedarbība",
+      "Izglītības tehnoloģijas"
+    ],
+    "keywords": [
+      "lietojamība",
+      "izglītība",
+      "students",
+      "user"
+    ],
+    "available": true,
+    "capacity": 3,
+    "synthetic": true,
+    "institution": "BakaBaka demonstrācija"
+  },
+  {
+    "user_id": 14,
+    "competencies": [
+      "Mašīnmācīšanās",
+      "Valodas modeļi"
+    ],
+    "keywords": [
+      "LLM",
+      "valodas",
+      "modelis",
+      "embeddings"
+    ],
+    "available": false,
+    "capacity": 3,
+    "synthetic": true,
+    "institution": "BakaBaka demonstrācija"
+  },
+  {
+    "user_id": 15,
+    "competencies": [
+      "Datu kvalitāte",
+      "Pētījumu metodoloģija"
+    ],
+    "keywords": [
+      "novērtēšana",
+      "metodoloģija",
+      "quality",
+      "evaluation"
+    ],
+    "available": true,
+    "capacity": 3,
+    "synthetic": true,
+    "institution": "BakaBaka demonstrācija"
+  },
+  {
+    "user_id": 16,
+    "competencies": [
+      "Kiberdrošība",
+      "Privātums"
+    ],
+    "keywords": [
+      "drošība",
+      "privātums",
+      "security"
+    ],
+    "available": true,
+    "capacity": 3,
+    "synthetic": true,
+    "institution": "BakaBaka demonstrācija"
+  }
+]

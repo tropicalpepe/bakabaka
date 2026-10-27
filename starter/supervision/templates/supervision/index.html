@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+{% block title %}Vadītājs un atsauksmes — {{ project.title }}{% endblock %}
+{% block nav_supervision %}active{% endblock %}
+{% block project_title %}<span class="header-project-title">{{ project.title|truncatechars:40 }}</span>{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <a href="{% url 'projects:detail' project.id %}" class="breadcrumb">← Pārskats</a>
+    <h1 class="page-title">Vadītājs un atsauksmes</h1>
+  </div>
+</div>
+
+{% if request.user.role == "student" %}
+<!-- ===== STUDENT VIEW ===== -->
+
+{% if active_assignment %}
+<div class="card mb-16">
+  <div class="card-section">
+    <h2 class="section-heading">Aktīvais vadītājs</h2>
+    <div class="assignment-status">
+      <div class="assignment-info">
+        <strong>{{ active_assignment.supervisor.get_full_name|default:active_assignment.supervisor.username }}</strong>
+        <span class="badge badge--{{ active_assignment.state }} ml-8">
+          {% if active_assignment.state == "requested" %}Pieprasījums nosūtīts
+          {% elif active_assignment.state == "accepted" %}Sadarbība apstiprināta{% endif %}
+        </span>
+        {% if active_assignment.supervisor.synthetic %}<span class="synthetic-label ml-8">Sintētisks demonstrācijas vadītājs</span>{% endif %}
+      </div>
+      {% if active_assignment.state == "requested" %}
+      <button type="button" class="btn btn--ghost btn--small cancel-request-btn"
+              data-assignment-id="{{ active_assignment.id }}">Atcelt pieprasījumu</button>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% else %}
+<!-- Supervisor search/request -->
+<div class="card mb-16" id="supervisor-panel">
+  <div class="card-section">
+    <h2 class="section-heading">Pieprasīt vadītāju</h2>
+    <p class="form-hint mb-8">Zemāk redzamie vadītāji ir <strong>sintētiski demonstrācijas dati</strong> — nav īsti universitātes darbinieki.</p>
+    <div id="candidates-list">
+      <div class="empty-state small"><p>Ielādē vadītāju sarakstu...</p></div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Topic submission panel -->
+<div class="card mb-16">
+  <div class="card-section">
+    <h2 class="section-heading">Tēmas iesniegums</h2>
+    {% if not active_assignment or active_assignment.state != "accepted" %}
+      <div class="alert alert--info">Vispirms nepieciešama vadītāja piekrišana.</div>
+    {% elif latest_submission %}
+      {% with state=latest_submission.display_state %}
+      <div class="submission-header">
+        <span>Iesniegums #{{ latest_submission.number }}</span>
+        <span class="badge badge--{{ state }}">
+          {% if state == "submitted" %}Gaida lēmumu
+          {% elif state == "approved" %}Apstiprināta
+          {% elif state == "changes_requested" %}Nepieciešami labojumi
+          {% elif state == "rejected" %}Noraidīta
+          {% elif state == "superseded" %}Aizstāta
+          {% else %}{{ state }}{% endif %}
+        </span>
+      </div>
+      <div class="submission-content mt-8">
+        <p><strong>Tēma:</strong> {{ latest_submission.title }}</p>
+        <p><strong>Hipotēze:</strong> {{ latest_submission.hypothesis }}</p>
+        <p><strong>Pamatojums:</strong> {{ latest_submission.rationale }}</p>
+        <p class="form-hint">Iesniegts: {{ latest_submission.submitted_at|date:"d.m.Y H:i" }} · {{ latest_submission.author.get_full_name|default:latest_submission.author.username }}</p>
+      </div>
+      {% if latest_submission.decision %}
+      <div class="decision-block mt-8 {% if latest_submission.decision.decision == 'approved' %}decision--approved{% elif latest_submission.decision.decision == 'rejected' %}decision--rejected{% else %}decision--changes{% endif %}">
+        <strong>Lēmums: {{ latest_submission.decision.get_decision_display }}</strong>
+        {% if latest_submission.decision.comment %}<p>{{ latest_submission.decision.comment }}</p>{% endif %}
+        <p class="form-hint">{{ latest_submission.decision.actor.get_full_name|default:latest_submission.decision.actor.username }} · {{ latest_submission.decision.created_at|date:"d.m.Y H:i" }}</p>
+      </div>
+      {% endif %}
+      {% endwith %}
+    {% else %}
+      <p>Tēmas melnraksts nav iesniegts. <a href="{% url 'recommendations:research' project.id %}">Sagatavojiet melnrakstu tēmu un avotu sadaļā.</a></p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Submission history -->
+{% if submissions|length > 1 %}
+<div class="card">
+  <div class="card-section">
+    <h2 class="section-heading">Iesniegumu vēsture</h2>
+    {% for sub in submissions %}
+    <div class="history-item">
+      <span class="badge badge--{{ sub.display_state }}">#{{ sub.number }}</span>
+      {{ sub.title|truncatechars:60 }} — {{ sub.submitted_at|date:"d.m.Y" }}
+      {% if sub.decision %}<span class="badge badge--{{ sub.decision.decision }}">{{ sub.decision.get_decision_display }}</span>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{% elif request.user.role == "supervisor" %}
+<!-- ===== SUPERVISOR VIEW ===== -->
+
+{% if active_assignment %}
+<div class="card mb-16">
+  <div class="card-section">
+    <h2 class="section-heading">Projekts: {{ project.title }}</h2>
+    <p><strong>Students:</strong> {{ project.owner.get_full_name|default:project.owner.username }}</p>
+    <p><strong>Ideja:</strong> {{ project.idea|truncatechars:200 }}</p>
+    <p class="badge badge--{{ active_assignment.state }}">
+      {% if active_assignment.state == "requested" %}Pieprasījums gaida atbildi
+      {% elif active_assignment.state == "accepted" %}Sadarbība apstiprināta{% endif %}
+    </p>
+    {% if active_assignment.state == "requested" %}
+    <div class="form-actions mt-12">
+      <button type="button" class="btn btn--primary" data-assignment-id="{{ active_assignment.id }}" id="accept-btn">Apstiprināt</button>
+      <button type="button" class="btn btn--secondary" data-assignment-id="{{ active_assignment.id }}" id="decline-btn">Noraidīt</button>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+{% if latest_submission and active_assignment and active_assignment.state == "accepted" %}
+<div class="card mb-16">
+  <div class="card-section">
+    <h2 class="section-heading">Pašreizējais iesniegums #{{ latest_submission.number }}</h2>
+    <p><strong>Tēma:</strong> {{ latest_submission.title }}</p>
+    <p><strong>Hipotēze:</strong> {{ latest_submission.hypothesis }}</p>
+    <p><strong>Pamatojums:</strong> {{ latest_submission.rationale }}</p>
+    {% if latest_submission.sources_snapshot %}
+    <details class="mt-8"><summary class="btn btn--ghost btn--small">Avoti ({{ latest_submission.sources_snapshot|length }})</summary>
+    <ul class="mt-8">{% for src in latest_submission.sources_snapshot %}
+      <li style="font-size:.875rem;margin-bottom:4px"><a href="{{ src.url }}" target="_blank">{{ src.title }}</a> ({{ src.year }})</li>
+    {% endfor %}</ul></details>
+    {% endif %}
+
+    {% if not latest_submission.decision %}
+    <div class="decision-form mt-16" id="decision-form">
+      <h3 class="section-heading">Pieņemt lēmumu</h3>
+      <div class="form-group">
+        <label class="form-label">Lēmums</label>
+        <select id="decision-select" class="form-select form-input">
+          <option value="approved">Apstiprināt</option>
+          <option value="changes_requested">Pieprasīt labojumus</option>
+          <option value="rejected">Noraidīt</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Komentārs <span id="comment-required-hint" class="form-hint">(nepieciešams noraidot vai pieprasot labojumus)</span></label>
+        <textarea id="decision-comment" class="form-textarea" rows="3" placeholder="Ievadiet komentāru..."></textarea>
+        <p class="form-error hidden" id="comment-error">Komentārs ir nepieciešams šim lēmumam.</p>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn btn--primary" id="submit-decision-btn"
+                data-project-id="{{ project.id }}"
+                data-submission-id="{{ latest_submission.id }}">Apstiprināt lēmumu</button>
+      </div>
+    </div>
+    {% else %}
+    <div class="alert alert--info mt-8">Lēmums jau pieņemts: {{ latest_submission.decision.get_decision_display }}</div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+{% endif %}
+
+<style>
+.mb-16{margin-bottom:16px}.mt-8{margin-top:8px}.mt-12{margin-top:12px}.mt-16{margin-top:16px}.ml-8{margin-left:8px}
+.assignment-status{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.assignment-info{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.submission-header{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.submission-content p{margin-bottom:6px;font-size:.9375rem}
+.decision-block{padding:12px;border-radius:var(--radius-sm);border:1px solid}
+.decision--approved{background:var(--success-bg);border-color:#86EFAC}
+.decision--changes{background:var(--warning-bg);border-color:#FCD34D}
+.decision--rejected{background:var(--error-bg);border-color:#FCA5A5}
+.history-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:.875rem}
+.candidate-card{border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px;background:var(--surface)}
+.candidate-header{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+</style>
+
+<script>
+(function(){
+var projectId = '{{ project.id }}';
+
+// Load supervisor candidates for student
+var candidatesList = document.getElementById('candidates-list');
+if(candidatesList){
+  fetch('/research/'+projectId+'/supervisors/')
+    .then(function(r){return r.json();})
+    .then(function(data){
+      var html = data.candidates.map(function(c){
+        var matched = c.matched_keywords.length > 0 ? '<div class="keyword-tags mt-4">'+c.matched_keywords.map(function(k){return '<span class="keyword-tag">'+escHtml(k)+'</span>';}).join('')+'</div>' : '';
+        return '<div class="candidate-card">'+
+          '<div class="candidate-header">'+
+          '<div><strong>'+escHtml(c.display_name)+'</strong>'+
+          (c.synthetic?' <span class="badge badge--warning" style="font-size:.65rem">Sintētisks</span>':'')+
+          '<div style="font-size:.8125rem;color:var(--muted)">'+c.competencies.map(escHtml).join(', ')+'</div>'+
+          (c.score>0?'<div style="font-size:.75rem;color:var(--muted)">Atbilstošie atslēgvārdi: '+escHtml(c.matched_keywords.join(', '))+'</div>':'')+
+          '</div>'+
+          '<button type="button" class="btn btn--secondary btn--small request-sup-btn" data-sup-id="'+c.user_id+'" '+(c.available?'':'disabled')+'>'+
+          (c.available?'Pieprasīt':'Nav pieejams')+
+          '</button></div></div>';
+      }).join('');
+      candidatesList.innerHTML = html || '<p class="muted-text">Nav atrasts neviens vadītājs.</p>';
+      document.querySelectorAll('.request-sup-btn').forEach(function(btn){
+        btn.addEventListener('click', function(){
+          if(!confirm('Nosūtīt pieprasījumu šim vadītājam?')) return;
+          btn.disabled=true;
+          fetch('/supervision/'+projectId+'/request/',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','X-CSRFToken':getCsrf()},
+            body: JSON.stringify({supervisor_id: parseInt(btn.dataset.supId)})
+          }).then(function(r){return r.json();}).then(function(d){
+            if(d.data){window.location.reload();}
+            else{alert(d.error&&d.error.message_lv||'Kļūda.');btn.disabled=false;}
+          }).catch(function(){btn.disabled=false;});
+        });
+      });
+    });
+}
+
+// Cancel request
+document.querySelectorAll('.cancel-request-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    if(!confirm('Atcelt pieprasījumu?')) return;
+    fetch('/supervision/assignment/'+btn.dataset.assignmentId+'/cancel/',{
+      method:'POST',headers:{'X-CSRFToken':getCsrf()}
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.data) window.location.reload();
+    });
+  });
+});
+
+// Supervisor accept/decline
+var acceptBtn = document.getElementById('accept-btn');
+var declineBtn = document.getElementById('decline-btn');
+if(acceptBtn){
+  acceptBtn.addEventListener('click', function(){
+    fetch('/supervision/assignment/'+acceptBtn.dataset.assignmentId+'/respond/',{
+      method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':getCsrf()},
+      body:JSON.stringify({accepted:true})
+    }).then(function(r){return r.json();}).then(function(d){if(d.data)window.location.reload();});
+  });
+  declineBtn.addEventListener('click', function(){
+    var note = prompt('Noraidīšanas iemesls (neobligāts):') || '';
+    fetch('/supervision/assignment/'+declineBtn.dataset.assignmentId+'/respond/',{
+      method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':getCsrf()},
+      body:JSON.stringify({accepted:false,note:note})
+    }).then(function(r){return r.json();}).then(function(d){if(d.data)window.location.reload();});
+  });
+}
+
+// Decision form
+var decisionBtn = document.getElementById('submit-decision-btn');
+if(decisionBtn){
+  document.getElementById('decision-select').addEventListener('change', function(){
+    var needsComment = ['changes_requested','rejected'].includes(this.value);
+    document.getElementById('comment-required-hint').textContent = needsComment ? '(nepieciešams)' : '(neobligāts)';
+  });
+  decisionBtn.addEventListener('click', function(){
+    var decision = document.getElementById('decision-select').value;
+    var comment = document.getElementById('decision-comment').value.trim();
+    var commentErr = document.getElementById('comment-error');
+    if(['changes_requested','rejected'].includes(decision) && !comment){
+      commentErr.classList.remove('hidden'); return;
+    }
+    commentErr.classList.add('hidden');
+    decisionBtn.disabled=true;
+    fetch('/supervision/'+projectId+'/decide/'+decisionBtn.dataset.submissionId+'/',{
+      method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':getCsrf()},
+      body:JSON.stringify({decision:decision,comment:comment})
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.data){window.location.reload();}
+      else{alert(d.error&&d.error.message_lv||'Kļūda.');decisionBtn.disabled=false;}
+    }).catch(function(){decisionBtn.disabled=false;});
+  });
+}
+
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+})();
+</script>
+{% endblock %}

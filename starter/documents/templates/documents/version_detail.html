@@ -1,0 +1,348 @@
+{% extends "base.html" %}
+{% block title %}v{{ version.number }} {{ version.original_filename }} — BakaBaka{% endblock %}
+{% block nav_documents %}active{% endblock %}
+{% block project_title %}<span class="header-project-title">{{ project.title|truncatechars:40 }}</span>{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <a href="{% url 'documents:index' project.id %}" class="breadcrumb">← Versijas</a>
+    <h1 class="page-title">v{{ version.number }}: {{ version.original_filename }}</h1>
+  </div>
+  <a href="{% url 'documents:download' project.id version.id %}" class="btn btn--secondary btn--small">↓ Lejupielādēt</a>
+</div>
+
+<div class="doc-meta card mb-16">
+  <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:.875rem">
+    <span><strong>Formāts:</strong> {{ version.format|upper }}</span>
+    <span><strong>Izmērs:</strong> {{ version.size_bytes|filesizeformat }}</span>
+    <span><strong>SHA-256:</strong> <code style="font-size:.75rem">{{ version.sha256|slice:":16" }}…</code></span>
+    <span><strong>Augšupielādēts:</strong> {{ version.created_at|date:"d.m.Y H:i" }}</span>
+  </div>
+</div>
+
+<!-- Tab navigation -->
+<div class="tab-nav mb-16">
+  <button class="tab-btn active" data-tab="checks">Pārbaudes</button>
+  <button class="tab-btn" data-tab="advice">AI ieteikumi</button>
+  <button class="tab-btn" data-tab="comments">Komentāri</button>
+</div>
+
+<!-- CHECKS TAB -->
+<div id="tab-checks" class="tab-panel">
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+    <h2 class="section-heading">Pārbaudes rezultāti</h2>
+    {% if user_is_student %}
+    <button type="button" class="btn btn--primary btn--small" id="run-check-btn"
+            data-project-id="{{ project.id }}"
+            data-version-id="{{ version.id }}"
+            {% if pending_check_job %}disabled{% endif %}>
+      {% if pending_check_job %}Pārbauda...{% else %}Sākt pārbaudi{% endif %}
+    </button>
+    {% endif %}
+  </div>
+
+  {% if pending_check_job %}
+  <div class="job-status job-status--{{ pending_check_job.state }}"
+       data-job-id="{{ pending_check_job.id }}"
+       data-project-id="{{ project.id }}"
+       data-reload-on-done="1">Notiek pārbaude...</div>
+  {% endif %}
+
+  {% if latest_check %}
+    {% if latest_check.state == "succeeded" %}
+    <div class="card mb-16">
+      <div class="card-section">
+        <div class="rule-results">
+          {% for result in latest_check.rule_results.all %}
+          <div class="rule-result-row {{ result.outcome }}">
+            <span class="rule-result-id">{{ result.rule_id }}</span>
+            <span class="badge badge--{{ result.outcome }}">
+              {% if result.outcome == "passed" %}Izpildīts
+              {% elif result.outcome == "failed" %}Neizpildīts
+              {% else %}Nav izvērtēts{% endif %}
+            </span>
+            <span class="rule-result-explanation">{{ result.explanation }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    {% if findings_with_resolutions %}
+    <div class="card mb-16">
+      <div class="card-section">
+        <h3 class="section-heading">Atradumi</h3>
+        {% for finding, resolution in findings_with_resolutions %}
+        <div class="finding-card finding--{{ finding.severity }}" id="finding-{{ finding.id }}">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+            {% if finding.severity == "error" %}<span class="badge badge--failed">Kļūda</span>
+            {% elif finding.severity == "warning" %}<span class="badge badge--warning">Brīdinājums</span>
+            {% else %}<span class="badge badge--info">Informācija</span>{% endif %}
+            <span style="font-size:.8125rem;color:var(--muted)">{{ finding.rule_id }}</span>
+            {% if finding.location_json.page %}<span style="font-size:.8125rem;color:var(--muted)">Lpp. {{ finding.location_json.page }}</span>{% elif finding.location_json.unit_id %}<span style="font-size:.8125rem;color:var(--muted)">{{ finding.location_json.unit_id }}</span>{% endif %}
+          </div>
+          <p style="font-size:.875rem">{{ finding.explanation }}</p>
+          {% if finding.evidence %}<div class="finding-evidence mt-4">{{ finding.evidence|truncatechars:200 }}</div>{% endif %}
+          <p style="font-size:.8125rem;color:var(--muted);margin-top:6px"><strong>Ieteicamā rīcība:</strong> {{ finding.action }}</p>
+          {% if user_is_student %}
+          <div style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            {% if resolution and resolution.state == "claimed_fixed" %}
+              <span class="badge badge--claimed_fixed">Students atzīmējis kā izlabotu</span>
+            {% else %}
+              <button type="button" class="btn btn--ghost btn--small claim-fixed-btn"
+                      data-project-id="{{ project.id }}"
+                      data-finding-id="{{ finding.id }}">Atzīmēt kā izlabotu</button>
+            {% endif %}
+            <button type="button" class="btn btn--ghost btn--small add-comment-btn"
+                    data-target="finding" data-target-id="{{ finding.id }}">+ Komentēt</button>
+          </div>
+          {% endif %}
+          {% if request.user.role == "supervisor" %}
+          <button type="button" class="btn btn--ghost btn--small add-comment-btn"
+                  data-target="finding" data-target-id="{{ finding.id }}">+ Komentēt</button>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <p style="font-size:.75rem;color:var(--muted)">
+      Pārbaude pabeigta: {{ latest_check.completed_at|date:"d.m.Y H:i" }} ·
+      Noteikumi: {{ latest_check.requirement_set_id|slice:":8" }}… ·
+      Parsētājs: {{ latest_check.parser_version }}
+    </p>
+
+    {% elif latest_check.state == "failed" %}
+    <div class="alert alert--error">Pārbaude neizdevās. Mēģiniet vēlreiz.</div>
+    {% elif latest_check.state == "running" or latest_check.state == "queued" %}
+    <div class="alert alert--info">Pārbaude notiek...</div>
+    {% endif %}
+
+  {% elif not pending_check_job %}
+  <div class="empty-state small"><p>Pārbaude vēl nav veikta. Nospiediet "Sākt pārbaudi".</p></div>
+  {% endif %}
+
+</div>
+
+<!-- ADVICE TAB -->
+<div id="tab-advice" class="tab-panel hidden">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+    <h2 class="section-heading">AI ieteikumi</h2>
+    {% if user_is_student %}
+    <button type="button" class="btn btn--primary btn--small" id="run-advice-btn"
+            data-project-id="{{ project.id }}"
+            data-version-id="{{ version.id }}"
+            {% if pending_advice_job %}disabled{% endif %}>
+      {% if pending_advice_job %}Ģenerē...{% else %}Ģenerēt ieteikumus{% endif %}
+    </button>
+    {% endif %}
+  </div>
+
+  <p class="form-hint mb-8">
+    <span class="badge badge--info">AI ieteikums</span>
+    Ieteikumi balstīti izvēlētajos dokumenta fragmentos un saglabātajos avotos.
+    Tie nav oficiāls vērtējums, plaģiāta pārbaude vai darba labošana.
+  </p>
+
+  {% if pending_advice_job %}
+  <div class="job-status job-status--{{ pending_advice_job.state }}"
+       data-job-id="{{ pending_advice_job.id }}"
+       data-project-id="{{ project.id }}"
+       data-reload-on-done="1">Ģenerē ieteikumus...</div>
+  {% endif %}
+
+  {% if latest_advice %}
+    {% if latest_advice.origin == "synthetic_fixture" %}
+    <div class="ai-fixture-label">⚠ Demonstrācijas piemērs — nav ģenerēts šajā sesijā</div>
+    {% else %}
+    <div class="ai-live-label" style="margin-bottom:8px">
+      Ģenerēts: {{ latest_advice.created_at|date:"d.m.Y H:i" }} · {{ latest_advice.model }}
+    </div>
+    {% endif %}
+
+    {% if latest_advice.state == "succeeded" and latest_advice.response_json %}
+    <div class="card mb-16">
+      <div class="card-section">
+        {% for suggestion in latest_advice.response_json.suggestions %}
+        <div class="advice-item" style="border-bottom:1px solid var(--border);padding:12px 0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+            <span class="badge badge--info">{{ suggestion.category }}</span>
+            <span style="font-size:.8125rem;color:var(--muted)">{{ suggestion.unit_id }}</span>
+          </div>
+          <div class="finding-evidence mb-4">{{ suggestion.evidence }}</div>
+          <p style="font-size:.875rem"><strong>Ieteikums:</strong> {{ suggestion.suggestion }}</p>
+          <p style="font-size:.8125rem;color:var(--muted)">{{ suggestion.rationale }}</p>
+          {% if suggestion.uncertainty %}<p style="font-size:.8125rem;font-style:italic;color:var(--muted)">Nenoteiktība: {{ suggestion.uncertainty }}</p>{% endif %}
+          {% if suggestion.source_ids %}<p style="font-size:.75rem;color:var(--muted)">Avoti: {% for sid in suggestion.source_ids %}<span class="badge badge--muted">{{ sid }}</span> {% endfor %}</p>{% endif %}
+        </div>
+        {% endfor %}
+        {% if latest_advice.response_json.limitations %}
+        <p style="font-size:.8125rem;color:var(--muted);margin-top:12px;font-style:italic">{{ latest_advice.response_json.limitations }}</p>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if latest_advice.coverage_json %}
+    <details style="font-size:.8125rem;color:var(--muted)">
+      <summary>Pārklājums</summary>
+      <p>Analizētie fragmenti: {{ latest_advice.coverage_json.selected_unit_ids|length }}</p>
+      {% if latest_advice.coverage_json.omitted_unit_ids %}
+      <p>Neiekļautie fragmenti: {{ latest_advice.coverage_json.omitted_unit_ids|length }} (dokumenta garuma ierobežojuma dēļ)</p>
+      {% endif %}
+    </details>
+    {% endif %}
+
+    {% elif latest_advice.state == "failed" %}
+    <div class="alert alert--error">AI ieteikumu ģenerēšana neizdevās. Dati ir saglabāti; mēģiniet vēlreiz.</div>
+    {% elif latest_advice.state in "queued,running" %}
+    <div class="alert alert--info">Ģenerē ieteikumus...</div>
+    {% endif %}
+
+  {% elif not pending_advice_job %}
+  <div class="empty-state small"><p>AI ieteikumi vēl nav ģenerēti.</p></div>
+  {% endif %}
+</div>
+
+<!-- COMMENTS TAB -->
+<div id="tab-comments" class="tab-panel hidden">
+  <h2 class="section-heading mb-8">Komentāri par versiju</h2>
+
+  {% for comment in version_comments %}
+  <div class="comment-item card mb-8">
+    <div class="comment-header">
+      <strong>{{ comment.actor.get_full_name|default:comment.actor.username }}</strong>
+      <span class="badge badge--{{ comment.actor.role }}">
+        {% if comment.actor.role == "student" %}Students{% elif comment.actor.role == "supervisor" %}Vadītājs{% endif %}
+      </span>
+      <span class="form-hint">{{ comment.created_at|date:"d.m.Y H:i" }}</span>
+    </div>
+    <p class="comment-text">{{ comment.text }}</p>
+  </div>
+  {% empty %}
+  <p class="muted-text mb-16">Nav komentāru.</p>
+  {% endfor %}
+
+  <div class="card">
+    <div class="card-section">
+      <h3 class="section-heading">Pievienot komentāru</h3>
+      <div class="form-group">
+        <textarea id="comment-text" class="form-textarea" rows="3" placeholder="Ievadiet komentāru..."></textarea>
+        <p class="form-error hidden" id="comment-error">Komentārs nevar būt tukšs.</p>
+      </div>
+      <button type="button" class="btn btn--primary btn--small" id="submit-comment-btn"
+              data-project-id="{{ project.id }}"
+              data-version-id="{{ version.id }}">Pievienot</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.mb-8{margin-bottom:8px}.mb-16{margin-bottom:16px}.mb-4{margin-bottom:4px}.mt-4{margin-top:4px}
+.tab-nav{display:flex;border-bottom:2px solid var(--border);gap:0}
+.tab-btn{padding:8px 16px;background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer;font-size:.875rem;font-weight:500;color:var(--muted)}
+.tab-btn.active{color:var(--primary);border-bottom-color:var(--primary)}
+.tab-btn:hover{color:var(--text)}
+.comment-item{padding:12px 16px}
+.comment-header{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
+.comment-text{font-size:.9375rem;line-height:1.6}
+.muted-text{color:var(--muted);font-size:.875rem}
+.advice-item:last-child{border-bottom:none !important}
+</style>
+
+<script>
+(function(){
+// Tab switching
+var tabBtns = document.querySelectorAll('.tab-btn');
+var tabPanels = document.querySelectorAll('.tab-panel');
+tabBtns.forEach(function(btn){
+  btn.addEventListener('click', function(){
+    tabBtns.forEach(function(b){b.classList.remove('active');});
+    tabPanels.forEach(function(p){p.classList.add('hidden');});
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.remove('hidden');
+  });
+});
+
+// Run check
+var checkBtn = document.getElementById('run-check-btn');
+if(checkBtn){
+  checkBtn.addEventListener('click', function(){
+    checkBtn.disabled=true; checkBtn.textContent='Sāk pārbaudi...';
+    fetch('/documents/'+checkBtn.dataset.projectId+'/'+checkBtn.dataset.versionId+'/check/',{
+      method:'POST',headers:{'X-CSRFToken':getCsrf()}
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.data){
+        var div = document.createElement('div');
+        div.className='job-status job-status--queued';
+        div.dataset.jobId=d.data.job_id;
+        div.dataset.projectId=checkBtn.dataset.projectId;
+        div.dataset.reloadOnDone='1';
+        div.textContent='Gaida apstrādi';
+        checkBtn.parentElement.parentElement.appendChild(div);
+        window.startJobPoll(div);
+      }
+    }).catch(function(){checkBtn.disabled=false;checkBtn.textContent='Sākt pārbaudi';});
+  });
+}
+
+// Run advice
+var adviceBtn = document.getElementById('run-advice-btn');
+if(adviceBtn){
+  adviceBtn.addEventListener('click', function(){
+    adviceBtn.disabled=true; adviceBtn.textContent='Nosūta pieprasījumu...';
+    fetch('/documents/'+adviceBtn.dataset.projectId+'/'+adviceBtn.dataset.versionId+'/advice/',{
+      method:'POST',headers:{'X-CSRFToken':getCsrf()}
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.data){
+        adviceBtn.textContent='Ģenerē...';
+        var div = document.createElement('div');
+        div.className='job-status job-status--queued';
+        div.dataset.jobId=d.data.job_id;
+        div.dataset.projectId=adviceBtn.dataset.projectId;
+        div.dataset.reloadOnDone='1';
+        div.textContent='Gaida apstrādi';
+        adviceBtn.parentElement.parentElement.appendChild(div);
+        window.startJobPoll(div);
+      }
+    }).catch(function(){adviceBtn.disabled=false;adviceBtn.textContent='Ģenerēt ieteikumus';});
+  });
+}
+
+// Claim fixed
+document.querySelectorAll('.claim-fixed-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    btn.disabled=true;
+    fetch('/supervision/'+btn.dataset.projectId+'/claim/'+btn.dataset.findingId+'/',{
+      method:'POST',headers:{'X-CSRFToken':getCsrf()},body:JSON.stringify({note:''})
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.data){btn.outerHTML='<span class="badge badge--claimed_fixed">Students atzīmējis kā izlabotu</span>';}
+      else{btn.disabled=false;}
+    }).catch(function(){btn.disabled=false;});
+  });
+});
+
+// Add comment
+var submitCommentBtn = document.getElementById('submit-comment-btn');
+if(submitCommentBtn){
+  submitCommentBtn.addEventListener('click', function(){
+    var text = document.getElementById('comment-text').value.trim();
+    var err = document.getElementById('comment-error');
+    if(!text){err.classList.remove('hidden');return;}
+    err.classList.add('hidden');
+    submitCommentBtn.disabled=true;
+    fetch('/supervision/'+submitCommentBtn.dataset.projectId+'/comment/',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-CSRFToken':getCsrf()},
+      body:JSON.stringify({text:text, version_id:submitCommentBtn.dataset.versionId})
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.data){window.location.reload();}
+      else{alert(d.error&&d.error.message_lv||'Kļūda.');submitCommentBtn.disabled=false;}
+    }).catch(function(){submitCommentBtn.disabled=false;});
+  });
+}
+})();
+</script>
+{% endblock %}

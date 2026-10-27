@@ -1,0 +1,58 @@
+name: bakabaka-demo
+services:
+  init:
+    build:
+      context: ..
+      dockerfile: starter/Dockerfile
+    env_file: .env
+    environment:
+      DATA_DIR: /data
+      FIXTURE_DIR: /fixtures
+      RULES_DIR: /rules
+      PROMPTS_DIR: /prompts
+    volumes:
+      - bakabaka_data:/data
+    command: ["python", "-u", "init_demo.py"]
+    restart: "no"
+  web:
+    build:
+      context: ..
+      dockerfile: starter/Dockerfile
+    env_file: .env
+    environment:
+      DATA_DIR: /data
+      FIXTURE_DIR: /fixtures
+      RULES_DIR: /rules
+      PROMPTS_DIR: /prompts
+    volumes:
+      - bakabaka_data:/data
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+  worker:
+    build:
+      context: ..
+      dockerfile: starter/Dockerfile
+    env_file: .env
+    environment:
+      DATA_DIR: /data
+      FIXTURE_DIR: /fixtures
+      RULES_DIR: /rules
+      PROMPTS_DIR: /prompts
+    volumes:
+      - bakabaka_data:/data
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    command: ["python", "-u", "manage.py", "run_worker"]
+volumes:
+  bakabaka_data:

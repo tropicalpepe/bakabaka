@@ -1,0 +1,58 @@
+{
+  "id": "demo-lv",
+  "version": 1,
+  "programme": "BakaBaka demonstrācijas programma",
+  "official_university_policy": false,
+  "citation_style": "numeric_brackets",
+  "rules": [
+    {
+      "id": "STR-INTRO",
+      "kind": "required_heading",
+      "aliases": [
+        "Ievads"
+      ],
+      "severity": "error"
+    },
+    {
+      "id": "STR-METHOD",
+      "kind": "required_heading",
+      "aliases": [
+        "Metodoloģija",
+        "Metodes"
+      ],
+      "severity": "error"
+    },
+    {
+      "id": "STR-CONCLUSION",
+      "kind": "required_heading",
+      "aliases": [
+        "Secinājumi"
+      ],
+      "severity": "warning"
+    },
+    {
+      "id": "REF-SECTION",
+      "kind": "required_heading",
+      "aliases": [
+        "Izmantotā literatūra",
+        "Literatūras saraksts"
+      ],
+      "severity": "error"
+    },
+    {
+      "id": "REF-NUMERIC",
+      "kind": "numeric_references",
+      "severity": "warning"
+    },
+    {
+      "id": "FMT-BODY",
+      "kind": "body_font_size",
+      "points": 12,
+      "tolerance": 0.1,
+      "formats": [
+        "docx"
+      ],
+      "severity": "warning"
+    }
+  ]
+}

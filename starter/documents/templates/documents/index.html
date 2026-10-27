@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}Darba versijas — {{ project.title }}{% endblock %}
+{% block nav_documents %}active{% endblock %}
+{% block project_title %}<span class="header-project-title">{{ project.title|truncatechars:40 }}</span>{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <a href="{% url 'projects:detail' project.id %}" class="breadcrumb">← Pārskats</a>
+    <h1 class="page-title">Darba versijas un pārbaudes</h1>
+  </div>
+</div>
+
+{% if messages %}
+{% for msg in messages %}
+<div class="alert alert--{{ msg.tags|default:'error' }}" role="alert">{{ msg }}</div>
+{% endfor %}
+{% endif %}
+
+{% if user_is_student %}
+<div class="card mb-16">
+  <div class="card-section">
+    <h2 class="section-heading">Augšupielādēt jaunu versiju</h2>
+    <div class="alert alert--info" style="margin-bottom:12px">
+      <strong>Prototips pārbauda faila tipu un struktūru; pretvīrusu pārbaude nav nodrošināta.</strong>
+    </div>
+    <form method="post" action="{% url 'documents:upload' project.id %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="upload-zone" id="upload-zone">
+        <label class="upload-zone-label" for="file-input">
+          <div class="upload-zone-icon">📄</div>
+          <div class="upload-zone-text">Velciet failu šeit vai nospiediet, lai izvēlētos</div>
+          <div class="upload-zone-limits">PDF vai DOCX · maks. 20 MB · maks. 100 lappušu</div>
+        </label>
+        <input type="file" id="file-input" name="file" accept=".pdf,.docx" class="sr-only" required>
+      </div>
+      <div id="file-name-display" class="form-hint mt-8 hidden"></div>
+      <input type="hidden" name="idempotency_key" id="idempotency-key">
+      <div class="form-actions mt-8">
+        <button type="submit" class="btn btn--primary" id="upload-btn" disabled>Augšupielādēt</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
+
+{% if versions %}
+<div class="card">
+  <div class="card-section">
+    <h2 class="section-heading">Versijas</h2>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Versija</th>
+          <th>Fails</th>
+          <th>Pārbaude</th>
+          <th>AI ieteikums</th>
+          <th>Augšupielādēts</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for v in versions %}
+        <tr>
+          <td><strong>v{{ v.number }}</strong> <span class="badge badge--muted">{{ v.format|upper }}</span></td>
+          <td>{{ v.original_filename }}</td>
+          <td>
+            {% with cr=v.check_runs.first %}
+            {% if cr %}
+              <span class="badge badge--{{ cr.state }}">
+                {% if cr.state == "succeeded" %}Pabeigta
+                {% elif cr.state == "running" %}Pārbauda
+                {% elif cr.state == "queued" %}Gaida
+                {% elif cr.state == "failed" %}Kļūda
+                {% else %}{{ cr.state }}{% endif %}
+              </span>
+            {% else %}
+              <span class="badge badge--muted">Nav</span>
+            {% endif %}
+            {% endwith %}
+          </td>
+          <td>
+            {% with ar=v.advice_runs.first %}
+            {% if ar %}
+              <span class="badge badge--{{ ar.state }}">
+                {% if ar.state == "succeeded" %}Sagatavots
+                {% elif ar.state == "running" %}Ģenerē
+                {% elif ar.state == "queued" %}Gaida
+                {% elif ar.state == "failed" %}Kļūda
+                {% else %}{{ ar.state }}{% endif %}
+              </span>
+            {% else %}
+              <span class="badge badge--muted">Nav</span>
+            {% endif %}
+            {% endwith %}
+          </td>
+          <td class="form-hint">{{ v.created_at|date:"d.m.Y H:i" }}</td>
+          <td><a href="{% url 'documents:version_detail' project.id v.id %}" class="btn btn--secondary btn--small">Apskatīt</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-icon">📁</div>
+  <h2>Nav augšupielādētu versiju</h2>
+  {% if user_is_student %}
+  <p>Augšupielādējiet savu bakalaura darba melnrakstu (PDF vai DOCX).</p>
+  {% else %}
+  <p>Students vēl nav augšupielādējis nevienu versiju.</p>
+  {% endif %}
+</div>
+{% endif %}
+
+<style>.mb-16{margin-bottom:16px}.mt-8{margin-top:8px}</style>
+<script>
+var fileInput = document.getElementById('file-input');
+var uploadBtn = document.getElementById('upload-btn');
+var nameDisplay = document.getElementById('file-name-display');
+var zone = document.getElementById('upload-zone');
+if(fileInput){
+  fileInput.addEventListener('change', function(){
+    if(this.files.length){
+      nameDisplay.textContent = 'Izvēlēts: ' + this.files[0].name + ' (' + (this.files[0].size/1024/1024).toFixed(2) + ' MB)';
+      nameDisplay.classList.remove('hidden');
+      uploadBtn.disabled = false;
+      document.getElementById('idempotency-key').value = Date.now().toString();
+    }
+  });
+  zone.addEventListener('dragover', function(e){e.preventDefault();zone.classList.add('drag-over');});
+  zone.addEventListener('dragleave', function(){zone.classList.remove('drag-over');});
+  zone.addEventListener('drop', function(e){
+    e.preventDefault(); zone.classList.remove('drag-over');
+    if(e.dataTransfer.files.length){ fileInput.files = e.dataTransfer.files; fileInput.dispatchEvent(new Event('change')); }
+  });
+}
+</script>
+{% endblock %}

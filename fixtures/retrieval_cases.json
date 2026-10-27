@@ -1,0 +1,30 @@
+[
+  {
+    "query": "dense passage retrieval",
+    "expected_top_group": [
+      "ARXIV-2004.04906",
+      "ARXIV-2005.11401",
+      "ARXIV-2104.08663"
+    ],
+    "irrelevant": [
+      "ARXIV-2009.08367"
+    ],
+    "mode": "keyword_or_hybrid"
+  },
+  {
+    "query": "valodas nozīmes meklēšana līdzīgos akadēmiskos avotos",
+    "expected_top_group": [
+      "ARXIV-1908.10084",
+      "ARXIV-2004.04906",
+      "ARXIV-2004.09813"
+    ],
+    "mode": "live_semantic_evaluation"
+  },
+  {
+    "query": "nonorientable surfaces EIT",
+    "expected_top_group": [
+      "ARXIV-2009.08367"
+    ],
+    "mode": "keyword_or_hybrid"
+  }
+]

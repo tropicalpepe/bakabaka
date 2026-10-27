@@ -1,0 +1,34 @@
+{
+  "draft_v1.docx": {
+    "STR-INTRO": "passed",
+    "STR-METHOD": "failed",
+    "STR-CONCLUSION": "passed",
+    "REF-SECTION": "passed",
+    "REF-NUMERIC": "failed",
+    "FMT-BODY": "failed"
+  },
+  "draft_v2.docx": {
+    "STR-INTRO": "passed",
+    "STR-METHOD": "passed",
+    "STR-CONCLUSION": "passed",
+    "REF-SECTION": "passed",
+    "REF-NUMERIC": "passed",
+    "FMT-BODY": "passed"
+  },
+  "draft_v1.pdf": {
+    "STR-INTRO": "passed",
+    "STR-METHOD": "failed",
+    "STR-CONCLUSION": "passed",
+    "REF-SECTION": "passed",
+    "REF-NUMERIC": "failed",
+    "FMT-BODY": "not_assessed"
+  },
+  "draft_v2.pdf": {
+    "STR-INTRO": "passed",
+    "STR-METHOD": "passed",
+    "STR-CONCLUSION": "passed",
+    "REF-SECTION": "passed",
+    "REF-NUMERIC": "passed",
+    "FMT-BODY": "not_assessed"
+  }
+}

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BakaBaka — Pieteikties</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body class="auth-layout">
+  <div class="auth-card">
+    <div class="demo-banner">
+      <span>⚠ Demonstrācijas vide — sintētiski dati</span>
+    </div>
+    <div class="auth-header">
+      <div class="logo-mark large">BB</div>
+      <h1 class="auth-title">BakaBaka</h1>
+      <p class="auth-subtitle">Bakalaura darba asistents</p>
+    </div>
+
+    {% if form.errors %}
+    <div class="alert alert--error" role="alert">
+      Nepareizs lietotājvārds vai parole.
+    </div>
+    {% endif %}
+
+    <form method="post" class="login-form" novalidate>
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label" for="id_username">Lietotājvārds</label>
+        <input type="text" name="username" id="id_username" class="form-input"
+               autocomplete="username" autofocus required>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="id_password">Parole</label>
+        <input type="password" name="password" id="id_password" class="form-input"
+               autocomplete="current-password" required>
+      </div>
+      <input type="hidden" name="next" value="{{ next }}">
+      <button type="submit" class="btn btn--primary btn--full">Pieteikties</button>
+    </form>
+
+    <div class="demo-accounts">
+      <p class="demo-accounts-title">Demonstrācijas konti (parole: <code>BakaDemo-2026!</code>)</p>
+      <div class="demo-accounts-grid">
+        <div>
+          <strong>Studenti</strong>
+          <ul>
+            <li><button type="button" class="demo-login-btn" data-user="anna">anna</button> — Anna Liepa</li>
+            <li><button type="button" class="demo-login-btn" data-user="janis">jānis</button> — Jānis Kalns</li>
+          </ul>
+        </div>
+        <div>
+          <strong>Vadītāji</strong>
+          <ul>
+            <li><button type="button" class="demo-login-btn" data-user="ilze">ilze</button> — Ilze Ozola</li>
+            <li><button type="button" class="demo-login-btn" data-user="martins">martins</button> — Mārtiņš Bērziņš</li>
+            <li><button type="button" class="demo-login-btn" data-user="laura">laura</button></li>
+          </ul>
+        </div>
+      </div>
+      <p class="synthetic-label">Sintētiski demonstrācijas dati — nav īsti lietotāji</p>
+    </div>
+  </div>
+
+  <script>
+  document.querySelectorAll('.demo-login-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.getElementById('id_username').value = btn.dataset.user;
+      document.getElementById('id_password').value = 'BakaDemo-2026!';
+    });
+  });
+  </script>
+</body>
+</html>

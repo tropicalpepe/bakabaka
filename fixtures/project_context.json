@@ -1,0 +1,19 @@
+{
+  "project_id": "11111111-1111-4111-8111-111111111111",
+  "owner_username": "anna",
+  "programme": "BakaBaka demonstrācijas programma",
+  "title": "Akadēmisko avotu meklēšana latviešu valodā",
+  "interests": [
+    "Dabiskās valodas apstrāde",
+    "Informācijas meklēšana"
+  ],
+  "keywords": [
+    "meklēšana",
+    "semantiskā",
+    "retrieval",
+    "latviešu",
+    "RAG"
+  ],
+  "idea": "Salīdzināt atslēgvārdu un semantisko meklēšanu nelielā akadēmisko avotu kolekcijā, palīdzot studentam sagatavot bakalaura darba tēmu.",
+  "synthetic": true
+}

@@ -1,0 +1,37 @@
+{
+  "origin": "synthetic_fixture",
+  "prompt_version": "topic-v1",
+  "response": {
+    "proposals": [
+      {
+        "title": "Atslēgvārdu un semantiskās meklēšanas salīdzinājums akadēmisko avotu kolekcijā",
+        "hypothesis": "Semantiskā meklēšana uzlabos cilvēku vērtēto atbilstību sinonīmiskiem vaicājumiem salīdzinājumā ar atslēgvārdu pieeju.",
+        "rationale": "Salīdzināt divas metodes vienā fiksētā kolekcijā ar vienādiem vaicājumiem.",
+        "source_ids": [
+          "ARXIV-1908.10084",
+          "ARXIV-2004.04906"
+        ],
+        "limitations": "Sintētisks piemērs; hipotēze nav pārbaudīta, pamatojums tikai metadatu līmenī."
+      },
+      {
+        "title": "Latviešu valodas vaicājumu ietekme uz daudzvalodu avotu atlasi",
+        "hypothesis": "Daudzvalodu reprezentācijas samazinās atbilstības kritumu starp latviešu un angļu vaicājumiem.",
+        "rationale": "Pārbaudīt paralēlus vaicājumus un atšķirīgi formulētus sinonīmus.",
+        "source_ids": [
+          "ARXIV-2004.09813"
+        ],
+        "limitations": "Sintētisks piemērs; vajadzīgs neatkarīgs atbilstības vērtējums."
+      },
+      {
+        "title": "Avotu pamatojuma saskarnes ietekme uz tēmas izvēles skaidrību",
+        "hypothesis": "Redzami avoti un nenoteiktības paskaidrojumi palīdzēs studentiem precīzāk pamatot izvēlēto tēmu.",
+        "rationale": "Salīdzināt divus saskarnes variantus ar iepriekš definētiem lietotāju uzdevumiem.",
+        "source_ids": [
+          "ARXIV-2005.11401"
+        ],
+        "limitations": "Sintētisks piemērs; kolekcija nepierāda lietotāju uzvedības efektu."
+      }
+    ],
+    "grounding_note": "Sintētiska testa atbilde; nav OpenAI ģenerēts vai saglabāts reāls rezultāts."
+  }
+}

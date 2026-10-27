@@ -1,0 +1,722 @@
+[
+  {
+    "id": "ARXIV-1706.03762",
+    "title": "Attention Is All You Need",
+    "authors": [
+      "Vaswani, Ashish",
+      "Shazeer, Noam",
+      "Parmar, Niki",
+      "Uszkoreit, Jakob"
+    ],
+    "year": 2017,
+    "url": "https://arxiv.org/abs/1706.03762",
+    "repository": "arXiv",
+    "language": "en",
+    "document_type": "preprint",
+    "annotation": "Introduces the Transformer architecture for sequence modelling. Relevant background when explaining the neural models used to represent text in semantic retrieval.",
+    "keywords": [
+      "transformer",
+      "attention",
+      "language",
+      "models",
+      "valodas",
+      "modeļi"
+    ],
+    "synthetic": false,
+    "evidence_level": "metadata_annotation",
+    "rights_note": "Bibliographic metadata and original editorial annotation only. No paper or abstract reproduced; underlying paper rights are not inferred.",
+    "provenance": {
+      "metadata_url": "https://arxiv.org/abs/1706.03762",
+      "verified_on": "2026-10-25",
+      "metadata_fields": "citation_title, citation_author, citation_date",
+      "annotation_origin": "editorial annotation"
+    },
+    "content_hash": "11ade6b6c6550bfaf83a0684c76ce54fd9a1ff1619727c2ba390316192cb0c5c",
+    "author_count": 8,
+    "authors_truncated": true,
+    "license": {
+      "underlying_work": "not_checked",
+      "bundled_content": "bibliographic_metadata_and_original_annotation_only"
+    }
+  },
+  {
+    "id": "ARXIV-1810.04805",
+    "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+    "authors": [
+      "Devlin, Jacob",
+      "Chang, Ming-Wei",
+      "Lee, Kenton",
+      "Toutanova, Kristina"
+    ],
+    "year": 2018,
+    "url": "https://arxiv.org/abs/1810.04805",
+    "repository": "arXiv",
+    "language": "en",
+    "document_type": "preprint",
+    "annotation": "Describes bidirectional Transformer pretraining for language understanding. Useful background for encoder-based representations used by later retrieval and sentence-similarity methods.",
+    "keywords": [
+      "BERT",
+      "encoder",
+      "pretraining",
+      "valoda"
+    ],
+    "synthetic": false,
+    "evidence_level": "metadata_annotation",
+    "rights_note": "Bibliographic metadata and original editorial annotation only. No paper or abstract reproduced; underlying paper rights are not inferred.",
+    "provenance": {
+      "metadata_url": "https://arxiv.org/abs/1810.04805",
+      "verified_on": "2026-10-25",
+      "metadata_fields": "citation_title, citation_author, citation_date",
+      "annotation_origin": "editorial annotation"
+    },
+    "content_hash": "7722fc2901db5de21cc0235fbe7b3186d1a15ea8601319a39fbb14ba8ed100d4",
+    "author_count": 4,
+    "authors_truncated": false,
+    "license": {
+      "underlying_work": "not_checked",
+      "bundled_content": "bibliographic_metadata_and_original_annotation_only"
+    }
+  },
+  {
+    "id": "ARXIV-1908.10084",
+    "title": "Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks",
+    "authors": [
+      "Reimers, Nils",
+      "Gurevych, Iryna"
+    ],
+    "year": 2019,
+    "url": "https://arxiv.org/abs/1908.10084",
+    "repository": "arXiv",
+    "language": "en",
+    "document_type": "preprint",
+    "annotation": "Presents sentence-level representations built with Siamese BERT networks. A relevant methodological starting point for comparing semantic sentence similarity with keyword matching.",
+    "keywords": [
+      "sentence",
+      "embeddings",
+      "semantic",
+      "similarity",
+      "semantiskā",
+      "meklēšana"
+    ],
+    "synthetic": false,
+    "evidence_level": "metadata_annotation",
+    "rights_note": "Bibliographic metadata and original editorial annotation only. No paper or abstract reproduced; underlying paper rights are not inferred.",
+    "provenance": {
+      "metadata_url": "https://arxiv.org/abs/1908.10084",
+      "verified_on": "2026-10-25",
+      "metadata_fields": "citation_title, citation_author, citation_date",
+      "annotation_origin": "editorial annotation"
+    },
+    "content_hash": "2260021e2871126baa7fbb754573acb46f44aec07899080e027a8003b920b8a2",
+    "author_count": 2,
+    "authors_truncated": false,
+    "license": {
+      "underlying_work": "not_checked",
+      "bundled_content": "bibliographic_metadata_and_original_annotation_only"
+    }
+  },
+  {
+    "id": "ARXIV-2004.04906",
+    "title": "Dense Passage Retrieval for Open-Domain Question Answering",
+    "authors": [
+      "Karpukhin, Vladimir",
+      "Oğuz, Barlas",
+      "Min, Sewon",
+      "Lewis, Patrick"
+    ],
+    "year": 2020,
+    "url": "https://arxiv.org/abs/2004.04906",
+    "repository": "arXiv",
+    "language": "en",
+    "document_type": "preprint",
+    "annotation": "Studies dense passage retrieval for question answering. Relevant to the retrieval component and comparison between learned representations and lexical search baselines.",
+    "keywords": [
+      "dense",
+      "passage",
+      "retrieval",
+      "meklēšana"
+    ],
+    "synthetic": false,
+    "evidence_level": "metadata_annotation",
+    "rights_note": "Bibliographic metadata and original editorial annotation only. No paper or abstract reproduced; underlying paper rights are not inferred.",
+    "provenance": {
+      "metadata_url": "https://arxiv.org/abs/2004.04906",
+      "verified_on": "2026-10-25",
+      "metadata_fields": "citation_title, citation_author, citation_date",
+      "annotation_origin": "editorial annotation"
+    },
+    "content_hash": "b693de7e342563d8285b9f6fc24df399f63078fd06b1986cd12621c95c3058b0",
+    "author_count": 8,
+    "authors_truncated": true,
+    "license": {
+      "underlying_work": "not_checked",
+      "bundled_content": "bibliographic_metadata_and_original_annotation_only"
+    }
+  },
+  {
+    "id": "ARXIV-2005.11401",
+    "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+    "authors": [
+      "Lewis, Patrick",
+      "Perez, Ethan",
+      "Piktus, Aleksandra",
+      "Petroni, Fabio"
+    ],
+    "year": 2020,
+    "url": "https://arxiv.org/abs/2005.11401",
+    "repository": "arXiv",
+    "language": "en",
+    "document_type": "preprint",
+    "annotation": "Combines retrieval and text generation for knowledge-intensive tasks. Useful context for designing source-grounded suggestions and separating retrieval evidence from generated explanations.",
+    "keywords": [
+      "retrieval",
+      "augmented",
+      "generation",
+      "RAG",
+      "avoti"
+    ],
+    "synthetic": false,
+    "evidence_level": "metadata_annotation",
+    "rights_note": "Bibliographic metadata and original editorial annotation only. No paper or abstract reproduced; underlying paper rights are not inferred.",
+    "provenance": {
+      "metadata_url": "https://arxiv.org/abs/2005.11401",
+      "verified_on": "2026-10-25",
+      "metadata_fields": "citation_title, citation_author, citation_date",
+      "annotation_origin": "editorial annotation"
+    },
+    "content_hash": "0fc45f4da84598ac961756e3f347cf2553b4e05d4ef886ea631c5e001321dba1",
+    "author_count": 12,
+    "authors_truncated": true,
+    "license": {
+      "underlying_work": "not_checked",
+      "bundled_content": "bibliographic_metadata_and_original_annotation_only"
+    }
+  },
+  {
+    "id": "ARXIV-2009.08367",
+    "title": "On the EIT problem for nonorientable surfaces",
+    "authors": [
+      "Belishev, M. I.",
+      "Korikov, D. V."
+    ],
+    "year": 2020,
+    "url": "https://arxiv.org/abs/2009.08367",
+    "repository": "arXiv",
+    "language": "en",
+    "document_type": "preprint",
+    "annotation": "Mathematical research on an electrical impedance tomography problem for nonorientable surfaces. Included as a contrasting topic for retrieval evaluation.",
+    "keywords": [
+      "mathematics",
+      "EIT",
+      "nonorientable",
+      "surfaces",
+      "topology"
+    ],
+    "synthetic": false,
+    "evidence_level": "metadata_annotation",
+    "rights_note": "Bibliographic metadata and original editorial annotation only. No paper or abstract reproduced; underlying paper rights are not inferred.",
+    "provenance": {
+      "metadata_url": "https://arxiv.org/abs/2009.08367",
+      "verified_on": "2026-10-25",
+      "metadata_fields": "citation_title, citation_author, citation_date",
+      "annotation_origin": "editorial annotation"
+    },
+    "content_hash": "8d342070ce1b531cb20d90dc0538ad66ede1d46c0775e74c5edac4a96d9bc5e9",
+    "author_count": 2,
+    "authors_truncated": false,
+    "license": {
+      "underlying_work": "not_checked",
+      "bundled_content": "bibliographic_metadata_and_original_annotation_only"
+    }
+  },
+  {
+    "id": "ARXIV-2104.08663",
+    "title": "BEIR: A Heterogenous Benchmark for Zero-shot Evaluation of Information Retrieval Models",
+    "authors": [
+      "Thakur, Nandan",
+      "Reimers, Nils",
+      "Rücklé, Andreas",
+      "Srivastava, Abhishek"
+    ],
+    "year": 2021,
+    "url": "https://arxiv.org/abs/2104.08663",
+    "repository": "arXiv",
+    "language": "en",
+    "document_type": "preprint",
+    "annotation": "Introduces a benchmark for evaluating information retrieval across varied datasets. Useful when planning retrieval evaluation beyond one prepared demonstration query.",
+    "keywords": [
+      "BEIR",
+      "evaluation",
+      "benchmark",
+      "retrieval",
+      "novērtēšana"
+    ],
+    "synthetic": false,
+    "evidence_level": "metadata_annotation",
+    "rights_note": "Bibliographic metadata and original editorial annotation only. No paper or abstract reproduced; underlying paper rights are not inferred.",
+    "provenance": {
+      "metadata_url": "https://arxiv.org/abs/2104.08663",
+      "verified_on": "2026-10-25",
+      "metadata_fields": "citation_title, citation_author, citation_date",
+      "annotation_origin": "editorial annotation"
+    },
+    "content_hash": "d87871ca2c19521b0fdbfe2902c656b04b9950e74c5ce5ce5013df7821135e7f",
+    "author_count": 5,
+    "authors_truncated": true,
+    "license": {
+      "underlying_work": "not_checked",
+      "bundled_content": "bibliographic_metadata_and_original_annotation_only"
+    }
+  },
+  {
+    "id": "ARXIV-2303.08774",
+    "title": "GPT-4 Technical Report",
+    "authors": [
+      "OpenAI",
+      "Achiam, Josh",
+      "Adler, Steven",
+      "Agarwal, Sandhini"
+    ],
+    "year": 2023,
+    "url": "https://arxiv.org/abs/2303.08774",
+    "repository": "arXiv",
+    "language": "en",
+    "document_type": "preprint",
+    "annotation": "Technical report about GPT-4. Provides historical model context; it is not documentation of the OpenAI API or the models configured in this prototype.",
+    "keywords": [
+      "GPT",
+      "language",
+      "model",
+      "evaluation",
+      "LLM"
+    ],
+    "synthetic": false,
+    "evidence_level": "metadata_annotation",
+    "rights_note": "Bibliographic metadata and original editorial annotation only. No paper or abstract reproduced; underlying paper rights are not inferred.",
+    "provenance": {
+      "metadata_url": "https://arxiv.org/abs/2303.08774",
+      "verified_on": "2026-10-25",
+      "metadata_fields": "citation_title, citation_author, citation_date",
+      "annotation_origin": "editorial annotation"
+    },
+    "content_hash": "5a1fc5a160e2a9e27f668335f9a2fefdb680543dc48602377c6c234e5d0cf5c8",
+    "author_count": 281,
+    "authors_truncated": true,
+    "license": {
+      "underlying_work": "not_checked",
+      "bundled_content": "bibliographic_metadata_and_original_annotation_only"
+    }
+  },
+  {
+    "id": "ARXIV-2307.09288",
+    "title": "Llama 2: Open Foundation and Fine-Tuned Chat Models",
+    "authors": [
+      "Touvron, Hugo",
+      "Martin, Louis",
+      "Stone, Kevin",
+      "Albert, Peter"
+    ],
+    "year": 2023,
+    "url": "https://arxiv.org/abs/2307.09288",
+    "repository": "arXiv",
+    "language": "en",
+    "document_type": "preprint",
+    "annotation": "Describes Llama 2 foundation and fine-tuned language models. Relevant background for comparing model families; these models are not required runtime dependencies.",
+    "keywords": [
+      "Llama",
+      "language",
+      "model",
+      "training",
+      "LLM"
+    ],
+    "synthetic": false,
+    "evidence_level": "metadata_annotation",
+    "rights_note": "Bibliographic metadata and original editorial annotation only. No paper or abstract reproduced; underlying paper rights are not inferred.",
+    "provenance": {
+      "metadata_url": "https://arxiv.org/abs/2307.09288",
+      "verified_on": "2026-10-25",
+      "metadata_fields": "citation_title, citation_author, citation_date",
+      "annotation_origin": "editorial annotation"
+    },
+    "content_hash": "293a16db5f387f96747b9153662fe687954c5c6c68d921c1c67c3712eb957406",
+    "author_count": 68,
+    "authors_truncated": true,
+    "license": {
+      "underlying_work": "not_checked",
+      "bundled_content": "bibliographic_metadata_and_original_annotation_only"
+    }
+  },
+  {
+    "id": "ARXIV-2309.15217",
+    "title": "Ragas: Automated Evaluation of Retrieval Augmented Generation",
+    "authors": [
+      "Es, Shahul",
+      "James, Jithin",
+      "Espinosa-Anke, Luis",
+      "Schockaert, Steven"
+    ],
+    "year": 2023,
+    "url": "https://arxiv.org/abs/2309.15217",
+    "repository": "arXiv",
+    "language": "en",
+    "document_type": "preprint",
+    "annotation": "Discusses automated evaluation of retrieval-augmented generation. Relevant when considering evaluation dimensions for grounded answers and retrieved context.",
+    "keywords": [
+      "RAG",
+      "evaluation",
+      "retrieval",
+      "quality",
+      "novērtēšana"
+    ],
+    "synthetic": false,
+    "evidence_level": "metadata_annotation",
+    "rights_note": "Bibliographic metadata and original editorial annotation only. No paper or abstract reproduced; underlying paper rights are not inferred.",
+    "provenance": {
+      "metadata_url": "https://arxiv.org/abs/2309.15217",
+      "verified_on": "2026-10-25",
+      "metadata_fields": "citation_title, citation_author, citation_date",
+      "annotation_origin": "editorial annotation"
+    },
+    "content_hash": "33ae15687f79b12df45889be293dc86297f1ce5e4edc2db6e60fd1452822bb96",
+    "author_count": 4,
+    "authors_truncated": false,
+    "license": {
+      "underlying_work": "not_checked",
+      "bundled_content": "bibliographic_metadata_and_original_annotation_only"
+    }
+  },
+  {
+    "id": "ARXIV-2312.10997",
+    "title": "Retrieval-Augmented Generation for Large Language Models: A Survey",
+    "authors": [
+      "Gao, Yunfan",
+      "Xiong, Yun",
+      "Gao, Xinyu",
+      "Jia, Kangxiang"
+    ],
+    "year": 2023,
+    "url": "https://arxiv.org/abs/2312.10997",
+    "repository": "arXiv",
+    "language": "en",
+    "document_type": "preprint",
+    "annotation": "Surveys retrieval-augmented generation for large language models. Useful as a broad map of retrieval, generation and evaluation design topics.",
+    "keywords": [
+      "RAG",
+      "survey",
+      "retrieval",
+      "generation",
+      "meklēšana"
+    ],
+    "synthetic": false,
+    "evidence_level": "metadata_annotation",
+    "rights_note": "Bibliographic metadata and original editorial annotation only. No paper or abstract reproduced; underlying paper rights are not inferred.",
+    "provenance": {
+      "metadata_url": "https://arxiv.org/abs/2312.10997",
+      "verified_on": "2026-10-25",
+      "metadata_fields": "citation_title, citation_author, citation_date",
+      "annotation_origin": "editorial annotation"
+    },
+    "content_hash": "1a1cbb39a2cd6fcd072e8bf0c63f6491a92ca01eb392b4af7dbe6f5150b6c3f9",
+    "author_count": 10,
+    "authors_truncated": true,
+    "license": {
+      "underlying_work": "not_checked",
+      "bundled_content": "bibliographic_metadata_and_original_annotation_only"
+    }
+  },
+  {
+    "id": "ARXIV-2310.11511",
+    "title": "Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection",
+    "authors": [
+      "Asai, Akari",
+      "Wu, Zeqiu",
+      "Wang, Yizhong",
+      "Sil, Avirup"
+    ],
+    "year": 2023,
+    "url": "https://arxiv.org/abs/2310.11511",
+    "repository": "arXiv",
+    "language": "en",
+    "document_type": "preprint",
+    "annotation": "Studies retrieval, generation and self-critique in a language-model workflow. Relevant background for distinguishing generated critique from independently verified evidence.",
+    "keywords": [
+      "Self-RAG",
+      "retrieval",
+      "critique",
+      "generation"
+    ],
+    "synthetic": false,
+    "evidence_level": "metadata_annotation",
+    "rights_note": "Bibliographic metadata and original editorial annotation only. No paper or abstract reproduced; underlying paper rights are not inferred.",
+    "provenance": {
+      "metadata_url": "https://arxiv.org/abs/2310.11511",
+      "verified_on": "2026-10-25",
+      "metadata_fields": "citation_title, citation_author, citation_date",
+      "annotation_origin": "editorial annotation"
+    },
+    "content_hash": "39d3af270c10d41bbb0fca8cc52752e85f86fb99bcb1216b2f2ca4e3660266ad",
+    "author_count": 5,
+    "authors_truncated": true,
+    "license": {
+      "underlying_work": "not_checked",
+      "bundled_content": "bibliographic_metadata_and_original_annotation_only"
+    }
+  },
+  {
+    "id": "ARXIV-2005.14165",
+    "title": "Language Models are Few-Shot Learners",
+    "authors": [
+      "Brown, Tom B.",
+      "Mann, Benjamin",
+      "Ryder, Nick",
+      "Subbiah, Melanie"
+    ],
+    "year": 2020,
+    "url": "https://arxiv.org/abs/2005.14165",
+    "repository": "arXiv",
+    "language": "en",
+    "document_type": "preprint",
+    "annotation": "Studies few-shot behavior of large language models. Provides background for prompt-based task specification rather than a direct implementation recipe for the current API.",
+    "keywords": [
+      "few",
+      "shot",
+      "language",
+      "models",
+      "prompting"
+    ],
+    "synthetic": false,
+    "evidence_level": "metadata_annotation",
+    "rights_note": "Bibliographic metadata and original editorial annotation only. No paper or abstract reproduced; underlying paper rights are not inferred.",
+    "provenance": {
+      "metadata_url": "https://arxiv.org/abs/2005.14165",
+      "verified_on": "2026-10-25",
+      "metadata_fields": "citation_title, citation_author, citation_date",
+      "annotation_origin": "editorial annotation"
+    },
+    "content_hash": "b8539a962091e4905099f1f6bedc9192933c04a2e3dcfd5ca303262f9c150084",
+    "author_count": 31,
+    "authors_truncated": true,
+    "license": {
+      "underlying_work": "not_checked",
+      "bundled_content": "bibliographic_metadata_and_original_annotation_only"
+    }
+  },
+  {
+    "id": "ARXIV-2203.02155",
+    "title": "Training language models to follow instructions with human feedback",
+    "authors": [
+      "Ouyang, Long",
+      "Wu, Jeff",
+      "Jiang, Xu",
+      "Almeida, Diogo"
+    ],
+    "year": 2022,
+    "url": "https://arxiv.org/abs/2203.02155",
+    "repository": "arXiv",
+    "language": "en",
+    "document_type": "preprint",
+    "annotation": "Studies instruction following with human feedback. Relevant to the distinction between machine suggestions and the human decisions retained in BakaBaka.",
+    "keywords": [
+      "human",
+      "feedback",
+      "instruction",
+      "following",
+      "alignment"
+    ],
+    "synthetic": false,
+    "evidence_level": "metadata_annotation",
+    "rights_note": "Bibliographic metadata and original editorial annotation only. No paper or abstract reproduced; underlying paper rights are not inferred.",
+    "provenance": {
+      "metadata_url": "https://arxiv.org/abs/2203.02155",
+      "verified_on": "2026-10-25",
+      "metadata_fields": "citation_title, citation_author, citation_date",
+      "annotation_origin": "editorial annotation"
+    },
+    "content_hash": "f0d829a1a7852196bf82b0cd8f2e39e38c7e3a9c3262cc03196b83eb79202e2f",
+    "author_count": 20,
+    "authors_truncated": true,
+    "license": {
+      "underlying_work": "not_checked",
+      "bundled_content": "bibliographic_metadata_and_original_annotation_only"
+    }
+  },
+  {
+    "id": "ARXIV-2201.11903",
+    "title": "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models",
+    "authors": [
+      "Wei, Jason",
+      "Wang, Xuezhi",
+      "Schuurmans, Dale",
+      "Bosma, Maarten"
+    ],
+    "year": 2022,
+    "url": "https://arxiv.org/abs/2201.11903",
+    "repository": "arXiv",
+    "language": "en",
+    "document_type": "preprint",
+    "annotation": "Investigates prompting methods for reasoning tasks. Relevant historical prompting research; this prototype requests concise explanations, not private reasoning traces.",
+    "keywords": [
+      "prompting",
+      "reasoning",
+      "chain",
+      "of",
+      "thought"
+    ],
+    "synthetic": false,
+    "evidence_level": "metadata_annotation",
+    "rights_note": "Bibliographic metadata and original editorial annotation only. No paper or abstract reproduced; underlying paper rights are not inferred.",
+    "provenance": {
+      "metadata_url": "https://arxiv.org/abs/2201.11903",
+      "verified_on": "2026-10-25",
+      "metadata_fields": "citation_title, citation_author, citation_date",
+      "annotation_origin": "editorial annotation"
+    },
+    "content_hash": "5bc87d41580ba590034ba4e022245ace00c083805e2cf2da63e1ec317871df43",
+    "author_count": 9,
+    "authors_truncated": true,
+    "license": {
+      "underlying_work": "not_checked",
+      "bundled_content": "bibliographic_metadata_and_original_annotation_only"
+    }
+  },
+  {
+    "id": "ARXIV-2210.03629",
+    "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+    "authors": [
+      "Yao, Shunyu",
+      "Zhao, Jeffrey",
+      "Yu, Dian",
+      "Du, Nan"
+    ],
+    "year": 2022,
+    "url": "https://arxiv.org/abs/2210.03629",
+    "repository": "arXiv",
+    "language": "en",
+    "document_type": "preprint",
+    "annotation": "Explores combining reasoning and actions in language-model systems. Included as related literature; runtime tool execution is deliberately excluded from this prototype.",
+    "keywords": [
+      "ReAct",
+      "reasoning",
+      "acting",
+      "agents"
+    ],
+    "synthetic": false,
+    "evidence_level": "metadata_annotation",
+    "rights_note": "Bibliographic metadata and original editorial annotation only. No paper or abstract reproduced; underlying paper rights are not inferred.",
+    "provenance": {
+      "metadata_url": "https://arxiv.org/abs/2210.03629",
+      "verified_on": "2026-10-25",
+      "metadata_fields": "citation_title, citation_author, citation_date",
+      "annotation_origin": "editorial annotation"
+    },
+    "content_hash": "82f20760fee192c33ae44dcd3ca9bbebaceffc5bffc74ec6ef4c454896ec6684",
+    "author_count": 7,
+    "authors_truncated": true,
+    "license": {
+      "underlying_work": "not_checked",
+      "bundled_content": "bibliographic_metadata_and_original_annotation_only"
+    }
+  },
+  {
+    "id": "ARXIV-2004.09813",
+    "title": "Making Monolingual Sentence Embeddings Multilingual using Knowledge Distillation",
+    "authors": [
+      "Reimers, Nils",
+      "Gurevych, Iryna"
+    ],
+    "year": 2020,
+    "url": "https://arxiv.org/abs/2004.09813",
+    "repository": "arXiv",
+    "language": "en",
+    "document_type": "preprint",
+    "annotation": "Studies multilingual sentence embeddings using knowledge distillation. Particularly relevant to evaluating Latvian queries against English academic metadata.",
+    "keywords": [
+      "multilingual",
+      "sentence",
+      "embeddings",
+      "Latvian",
+      "latviešu",
+      "semantiskā"
+    ],
+    "synthetic": false,
+    "evidence_level": "metadata_annotation",
+    "rights_note": "Bibliographic metadata and original editorial annotation only. No paper or abstract reproduced; underlying paper rights are not inferred.",
+    "provenance": {
+      "metadata_url": "https://arxiv.org/abs/2004.09813",
+      "verified_on": "2026-10-25",
+      "metadata_fields": "citation_title, citation_author, citation_date",
+      "annotation_origin": "editorial annotation"
+    },
+    "content_hash": "63b3893a5c23c013bff37002c3efdd22a3b54c3dbd34e2f76e43e654e5755da7",
+    "author_count": 2,
+    "authors_truncated": false,
+    "license": {
+      "underlying_work": "not_checked",
+      "bundled_content": "bibliographic_metadata_and_original_annotation_only"
+    }
+  },
+  {
+    "id": "DEMO-LV-001",
+    "title": "Semantiskās meklēšanas novērtēšana studenta darba plānošanā",
+    "authors": [
+      "BakaBaka demonstrācijas autors"
+    ],
+    "year": 2026,
+    "url": "https://example.invalid/bakabaka/demo-1",
+    "repository": "BakaBaka demonstrācija",
+    "language": "lv",
+    "document_type": "bachelor_thesis",
+    "annotation": "Sintētisks demonstrācijas darba ieraksts par avotu meklēšanas novērtēšanas plānu. Tas nav reāls aizstāvēts darbs un nav akadēmisks pierādījums.",
+    "keywords": [
+      "demonstrācija",
+      "meklēšana"
+    ],
+    "synthetic": true,
+    "evidence_level": "synthetic_fixture",
+    "rights_note": "Synthetic fixture content; available for this prototype. Not an institutional record.",
+    "provenance": {
+      "metadata_url": null,
+      "verified_on": "2026-10-25",
+      "annotation_origin": "synthetic original fixture"
+    },
+    "content_hash": "99c5569c2d111d85e3b80e6641f037f15587bf4affb1a632839081b1a7379f6b",
+    "author_count": 1,
+    "authors_truncated": false,
+    "license": {
+      "underlying_work": "synthetic_original",
+      "bundled_content": "bibliographic_metadata_and_original_annotation_only"
+    }
+  },
+  {
+    "id": "DEMO-LV-002",
+    "title": "Akadēmisko atsauču pārbaudes piemēri",
+    "authors": [
+      "BakaBaka demonstrācijas autors"
+    ],
+    "year": 2026,
+    "url": "https://example.invalid/bakabaka/demo-2",
+    "repository": "BakaBaka demonstrācija",
+    "language": "lv",
+    "document_type": "teaching_note",
+    "annotation": "Oriģināla demonstrācijas piezīme par skaitlisko atsauču sasaisti ar literatūras sarakstu. Nav oficiāla augstskolas prasība.",
+    "keywords": [
+      "demonstrācija",
+      "atsauces"
+    ],
+    "synthetic": true,
+    "evidence_level": "synthetic_fixture",
+    "rights_note": "Synthetic fixture content; available for this prototype. Not an institutional record.",
+    "provenance": {
+      "metadata_url": null,
+      "verified_on": "2026-10-25",
+      "annotation_origin": "synthetic original fixture"
+    },
+    "content_hash": "b714b61e45e3cab8d5da651970c5f29e445aa444e586b2d9617fe27ada9645a3",
+    "author_count": 1,
+    "authors_truncated": false,
+    "license": {
+      "underlying_work": "synthetic_original",
+      "bundled_content": "bibliographic_metadata_and_original_annotation_only"
+    }
+  }
+]

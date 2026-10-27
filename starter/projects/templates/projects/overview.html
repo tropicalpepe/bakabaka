@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Mani projekti — BakaBaka{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Mani projekti</h1>
+  {% if user.role == "student" %}
+  <a href="{% url 'projects:new_project' %}" class="btn btn--primary">+ Jauns projekts</a>
+  {% endif %}
+</div>
+
+{% if not projects %}
+<div class="empty-state">
+  <div class="empty-icon">📄</div>
+  <h2>Vēl nav projektu</h2>
+  {% if user.role == "student" %}
+  <p>Izveidojiet savu pirmo projektu, lai sāktu darbu.</p>
+  <a href="{% url 'projects:new_project' %}" class="btn btn--primary">Izveidot projektu</a>
+  {% else %}
+  <p>Jums nav piešķirtu projektu. Studenti var sūtīt pieprasījumus.</p>
+  {% endif %}
+</div>
+{% else %}
+<div class="project-list">
+  {% for project in projects %}
+  <a href="{% url 'projects:detail' project.id %}" class="project-card card">
+    <div class="project-card-header">
+      <h2 class="project-card-title">{{ project.title }}</h2>
+      <span class="badge badge--muted">{{ project.updated_at|date:"d.m.Y" }}</span>
+    </div>
+    <p class="project-card-idea">{{ project.idea|truncatechars:150 }}</p>
+    {% if project.keywords %}
+    <div class="keyword-tags">
+      {% for kw in project.keywords %}
+      <span class="keyword-tag">{{ kw }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </a>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

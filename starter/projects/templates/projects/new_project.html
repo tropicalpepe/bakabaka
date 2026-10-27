@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Jauns projekts — BakaBaka{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <a href="{% url 'projects:overview' %}" class="btn btn--ghost btn--small">← Atpakaļ</a>
+  <h1 class="page-title">Jauns projekts</h1>
+</div>
+
+<div class="card form-card">
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <div class="form-group">
+      <label class="form-label" for="id_title">Projekta nosaukums *</label>
+      <input type="text" id="id_title" name="title" class="form-input {% if errors.title %}form-input--error{% endif %}"
+             value="{{ form.title|default:'' }}" required maxlength="300"
+             placeholder="Piem., Semantiskā meklēšana latviešu akadēmiskajos tekstos">
+      {% if errors.title %}<p class="form-error" id="title-error">{{ errors.title }}</p>{% endif %}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="id_idea">Pētnieciskā darba ideja *</label>
+      <textarea id="id_idea" name="idea" class="form-textarea {% if errors.idea %}form-input--error{% endif %}"
+                rows="4" required placeholder="Aprakstiet savu pētniecisko ideju...">{{ form.idea|default:'' }}</textarea>
+      {% if errors.idea %}<p class="form-error" id="idea-error">{{ errors.idea }}</p>{% endif %}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="id_keywords">Atslēgvārdi <span class="form-hint">(komats kā atdalītājs)</span></label>
+      <input type="text" id="id_keywords" name="keywords" class="form-input"
+             value="{{ form.keywords|default:'' }}"
+             placeholder="meklēšana, semantiskā, NLP">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="id_programme">Studiju programma *</label>
+      <input type="text" id="id_programme" name="programme" class="form-input {% if errors.programme %}form-input--error{% endif %}"
+             value="{{ form.programme|default:'BakaBaka demonstrācijas programma' }}" required maxlength="200">
+      {% if errors.programme %}<p class="form-error" id="programme-error">{{ errors.programme }}</p>{% endif %}
+    </div>
+
+    <div class="form-actions">
+      <a href="{% url 'projects:overview' %}" class="btn btn--secondary">Atcelt</a>
+      <button type="submit" class="btn btn--primary">Izveidot projektu</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

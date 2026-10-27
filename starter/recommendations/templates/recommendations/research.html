@@ -1,0 +1,447 @@
+{% extends "base.html" %}
+{% block title %}Tēma un avoti — {{ project.title }}{% endblock %}
+{% block nav_research %}active{% endblock %}
+
+{% block project_title %}<span class="header-project-title">{{ project.title|truncatechars:40 }}</span>{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <a href="{% url 'projects:detail' project.id %}" class="breadcrumb">← Pārskats</a>
+    <h1 class="page-title">Tēma un avoti</h1>
+  </div>
+</div>
+
+<div class="research-layout">
+
+  <!-- LEFT: Topic generation panel -->
+  <div class="research-main">
+
+    <!-- Project context summary -->
+    <div class="card mb-16">
+      <div class="card-section">
+        <div class="context-summary">
+          <strong>Ideja:</strong> {{ project.idea|truncatechars:200 }}
+          {% if project.keywords %}
+          <div class="keyword-tags mt-8">{% for kw in project.keywords %}<span class="keyword-tag">{{ kw }}</span>{% endfor %}</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Topic proposals -->
+    <div class="card mb-16" id="topic-panel">
+      <div class="card-section">
+        <div class="section-row">
+          <h2 class="section-heading">Tēmas priekšlikumi</h2>
+          {% if request.user.role == "student" %}
+          <button type="button" class="btn btn--primary btn--small" id="generate-btn"
+                  data-project-id="{{ project.id }}"
+                  data-revision="{{ project.context_revision }}"
+                  {% if pending_job %}disabled{% endif %}>
+            {% if pending_job %}Ģenerē...{% else %}Ģenerēt priekšlikumus{% endif %}
+          </button>
+          {% endif %}
+        </div>
+
+        {% if pending_job %}
+        <div class="job-status job-status--{{ pending_job.state }}"
+             data-job-id="{{ pending_job.id }}"
+             data-project-id="{{ project.id }}"
+             data-reload-on-done="1">Notiek ģenerēšana...</div>
+        {% endif %}
+
+        <p class="ai-advisory-note">
+          <span class="badge badge--info">AI ieteikums</span>
+          Priekšlikumi balstīti avotu metadatos un anotācijās — ne pilnajos tekstos.
+          Gala lēmumu pieņem students.
+        </p>
+
+        {% if latest_gen and latest_gen.proposals_json %}
+          {% if latest_gen.is_stale %}
+          <div class="alert alert--warning">Projekta konteksts ir mainīts. Ģenerējiet jaunus priekšlikumus.</div>
+          {% endif %}
+          {% if latest_gen.origin == "synthetic_fixture" %}
+          <div class="ai-fixture-label">⚠ Demonstrācijas piemērs — nav ģenerēts šajā sesijā ({{ latest_gen.created_at|date:"d.m.Y H:i" }})</div>
+          {% else %}
+          <div class="ai-live-label">Ģenerēts: {{ latest_gen.created_at|date:"d.m.Y H:i" }} · {{ latest_gen.model }}</div>
+          {% endif %}
+
+          <div class="proposals-list" id="proposals-list">
+            {% for proposal in latest_gen.proposals_json %}
+            <div class="proposal-card card mt-12" data-proposal-idx="{{ forloop.counter0 }}">
+              <div class="proposal-header">
+                <h3 class="proposal-title" id="prop-title-{{ forloop.counter0 }}">{{ proposal.title }}</h3>
+              </div>
+              <p class="proposal-hypothesis"><strong>Hipotēze:</strong> {{ proposal.hypothesis }}</p>
+              <p class="proposal-rationale"><strong>Pamatojums:</strong> {{ proposal.rationale }}</p>
+              <p class="proposal-limitations"><em>Ierobežojumi: {{ proposal.limitations }}</em></p>
+              {% if proposal.source_ids %}
+              <div class="proposal-sources">
+                <span class="form-hint">Avoti: </span>
+                {% for sid in proposal.source_ids %}
+                <span class="badge badge--muted">{{ sid }}</span>
+                {% endfor %}
+              </div>
+              {% endif %}
+              {% if request.user.role == "student" %}
+              <div class="proposal-actions">
+                <button type="button" class="btn btn--secondary btn--small save-draft-btn"
+                        data-project-id="{{ project.id }}"
+                        data-title="{{ proposal.title }}"
+                        data-hypothesis="{{ proposal.hypothesis }}"
+                        data-rationale="{{ proposal.rationale }}">
+                  Saglabāt kā melnrakstu
+                </button>
+              </div>
+              {% endif %}
+            </div>
+            {% endfor %}
+          </div>
+
+        {% elif not pending_job %}
+          <div class="empty-state small">
+            <p>Vēl nav tēmas priekšlikumu. Nospiediet "Ģenerēt priekšlikumus".</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Current draft -->
+    {% if draft and draft.title %}
+    <div class="card mb-16" id="draft-panel">
+      <div class="card-section">
+        <h2 class="section-heading">Saglabātais melnraksts <span class="badge badge--draft">Melnraksts</span></h2>
+        <div class="draft-content" id="draft-view">
+          <p><strong>Tēma:</strong> <span id="dv-title">{{ draft.title }}</span></p>
+          <p><strong>Hipotēze:</strong> <span id="dv-hypothesis">{{ draft.hypothesis }}</span></p>
+          <p><strong>Pamatojums:</strong> <span id="dv-rationale">{{ draft.rationale }}</span></p>
+          {% if request.user.role == "student" %}
+          <div class="form-actions mt-8">
+            <button type="button" class="btn btn--secondary btn--small" id="edit-draft-btn">Rediģēt</button>
+            <button type="button" class="btn btn--primary btn--small" id="submit-topic-btn"
+                    data-project-id="{{ project.id }}"
+                    data-revision="{{ draft.revision }}">
+              Iesniegt vadītājam
+            </button>
+          </div>
+          {% endif %}
+        </div>
+        <div class="hidden" id="draft-edit-form">
+          <div class="form-group"><label class="form-label">Tēma</label><input type="text" id="de-title" class="form-input" value="{{ draft.title }}"></div>
+          <div class="form-group"><label class="form-label">Hipotēze</label><textarea id="de-hypothesis" class="form-textarea" rows="2">{{ draft.hypothesis }}</textarea></div>
+          <div class="form-group"><label class="form-label">Pamatojums</label><textarea id="de-rationale" class="form-textarea" rows="2">{{ draft.rationale }}</textarea></div>
+          <div class="form-actions">
+            <button type="button" class="btn btn--secondary btn--small" id="cancel-draft-btn">Atcelt</button>
+            <button type="button" class="btn btn--primary btn--small" id="save-draft-edit-btn"
+                    data-project-id="{{ project.id }}" data-revision="{{ draft.revision }}">Saglabāt</button>
+          </div>
+        </div>
+        <div id="draft-error" class="alert alert--error hidden mt-8"></div>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+
+  <!-- RIGHT: Source search -->
+  <div class="research-sidebar">
+    <div class="card">
+      <div class="card-section">
+        <h2 class="section-heading">Avotu meklēšana</h2>
+
+        {% if embedding_count == 0 %}
+        <div class="badge badge--warning mb-8">Meklēšana pēc atslēgvārdiem</div>
+        {% endif %}
+
+        <div class="form-group">
+          <input type="text" id="source-search-input" class="form-input"
+                 placeholder="Meklēt avotus..." aria-label="Avotu meklēšana">
+        </div>
+
+        <!-- Filters -->
+        <details class="filters-details">
+          <summary class="btn btn--ghost btn--small">Filtri</summary>
+          <div class="filters-grid mt-8">
+            <div class="form-group">
+              <label class="form-label">No gada</label>
+              <input type="number" id="filter-year-from" class="form-input" min="1990" max="2030" placeholder="2010">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Līdz gadam</label>
+              <input type="number" id="filter-year-to" class="form-input" min="1990" max="2030" placeholder="2026">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Valoda</label>
+              <select id="filter-language" class="form-select form-input">
+                <option value="">Visas</option>
+                <option value="en">Angļu</option>
+                <option value="lv">Latviešu</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tips</label>
+              <select id="filter-type" class="form-select form-input">
+                <option value="">Visi</option>
+                <option value="preprint">Preprints</option>
+                <option value="article">Raksts</option>
+                <option value="thesis">Bakalaura darbs</option>
+              </select>
+            </div>
+          </div>
+        </details>
+
+        <div id="search-mode-label" class="form-hint mt-4" style="font-size:.75rem;"></div>
+      </div>
+
+      <div id="search-results" class="source-results">
+        <!-- Results injected by JS -->
+        <div class="empty-state small"><p>Ievadiet atslēgvārdus, lai meklētu avotus.</p></div>
+      </div>
+    </div>
+
+    <!-- Saved sources -->
+    <div class="card mt-16">
+      <div class="card-section">
+        <h2 class="section-heading">Saglabātie avoti <span class="badge badge--muted">{{ saved_sources|length }}</span></h2>
+        {% if saved_sources %}
+        <div id="saved-sources-list">
+          {% for src in saved_sources %}
+          <div class="source-card mt-8" id="saved-{{ src.id }}">
+            <div class="source-card-header">
+              <span class="source-card-title">{{ src.title|truncatechars:80 }}</span>
+              {% if src.synthetic %}<span class="badge badge--warning">Sintētisks</span>{% endif %}
+            </div>
+            <div class="source-card-meta">{{ src.authors|join:", "|truncatechars:60 }} ({{ src.year }}) · {{ src.repository }}</div>
+            {% if request.user.role == "student" %}
+            <button type="button" class="btn btn--ghost btn--small remove-source-btn mt-4"
+                    data-project-id="{{ project.id }}" data-source-id="{{ src.id }}">
+              Noņemt
+            </button>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="muted-text">Nav saglabātu avotu.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<style>
+.research-layout{display:grid;gap:20px;align-items:start}
+@media(min-width:768px){.research-layout{grid-template-columns:1fr 360px}}
+.mb-16{margin-bottom:16px}.mt-12{margin-top:12px}.mt-16{margin-top:16px}.mt-4{margin-top:4px}.mt-8{margin-top:8px}
+.section-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.proposal-card{border:1px solid var(--border)}
+.proposal-title{font-size:1rem;font-weight:600;margin-bottom:6px}
+.proposal-hypothesis,.proposal-rationale,.proposal-limitations{font-size:.875rem;margin-top:6px;line-height:1.6}
+.proposal-sources{margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;font-size:.75rem}
+.proposal-actions{margin-top:10px}
+.ai-advisory-note{font-size:.8125rem;color:var(--muted);margin:8px 0;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.source-results{max-height:600px;overflow-y:auto;padding:8px 0}
+.source-result-item{padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+.source-result-item:hover{background:var(--bg)}
+.source-result-title{font-size:.875rem;font-weight:600;margin-bottom:2px}
+.source-result-meta{font-size:.75rem;color:var(--muted)}
+.source-result-annotation{font-size:.8125rem;margin-top:4px;color:var(--text)}
+.source-result-actions{margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
+.filters-details summary{list-style:none;cursor:pointer}
+.filters-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.empty-state.small{padding:24px 0;text-align:center}
+.muted-text{color:var(--muted);font-size:.875rem}
+.draft-content p{margin-bottom:6px;font-size:.9375rem}
+</style>
+
+<script>
+(function(){
+var projectId = '{{ project.id }}';
+var searchInput = document.getElementById('source-search-input');
+var resultsDiv = document.getElementById('search-results');
+var modeLabel = document.getElementById('search-mode-label');
+var searchTimer;
+var draftRevision = {{ draft.revision|default:1 }};
+
+// Debounced search
+function doSearch(){
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(function(){
+    var q = searchInput.value.trim();
+    var params = new URLSearchParams({q:q});
+    var yf = document.getElementById('filter-year-from').value;
+    var yt = document.getElementById('filter-year-to').value;
+    var lang = document.getElementById('filter-language').value;
+    var typ = document.getElementById('filter-type').value;
+    if(yf) params.set('year_from',yf);
+    if(yt) params.set('year_to',yt);
+    if(lang) params.set('language',lang);
+    if(typ) params.set('document_type',typ);
+
+    fetch('/research/' + projectId + '/search/?' + params.toString())
+      .then(function(r){return r.json();})
+      .then(renderResults);
+  }, 350);
+}
+
+function renderResults(data){
+  modeLabel.textContent = data.degraded_reason || (data.mode === 'hybrid' ? 'Hibrīdā semantiskā meklēšana' : '');
+  if(!data.results || data.results.length === 0){
+    resultsDiv.innerHTML = '<div class="empty-state small"><p>Nav atrasts neviens avots.</p></div>';
+    return;
+  }
+  var html = data.results.map(function(s){
+    var savedEl = document.getElementById('saved-' + s.id);
+    var isSaved = !!savedEl;
+    return '<div class="source-result-item" data-source-id="'+s.id+'">' +
+      '<div class="source-result-title">'+escHtml(s.title)+(s.synthetic?' <span class="badge badge--warning" style="font-size:.65rem">Sintētisks</span>':'')+' <span class="badge badge--muted" style="font-size:.65rem">'+escHtml(s.year+'')+'</span></div>' +
+      '<div class="source-result-meta">'+escHtml((s.authors||[]).join(', ').substring(0,80))+(s.repository?' · '+escHtml(s.repository):'')+' · '+escHtml(s.language||'')+'</div>' +
+      '<div class="source-result-annotation">'+escHtml((s.annotation||'').substring(0,180))+'</div>' +
+      '<div class="source-result-actions">' +
+      '<a href="'+escHtml(s.url)+'" target="_blank" rel="noopener" class="btn btn--ghost btn--small">Apskatīt ↗</a>' +
+      (isSaved ? '<span class="badge badge--accepted">Saglabāts</span>' :
+        '<button type="button" class="btn btn--secondary btn--small save-source-btn" data-source-id="'+s.id+'" data-source-title="'+escHtml(s.title)+'">+ Saglabāt</button>') +
+      '</div></div>';
+  }).join('');
+  resultsDiv.innerHTML = html;
+  attachSaveButtons();
+}
+
+function attachSaveButtons(){
+  resultsDiv.querySelectorAll('.save-source-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var sid = btn.dataset.sourceId;
+      btn.disabled = true;
+      fetch('/projects/' + projectId + '/sources/', {
+        method:'POST',
+        headers:{'Content-Type':'application/json','X-CSRFToken':getCsrf()},
+        body: JSON.stringify({source_id: sid, action:'save'})
+      }).then(function(r){return r.json();}).then(function(d){
+        if(d.data){
+          btn.outerHTML = '<span class="badge badge--accepted">Saglabāts</span>';
+          // Reload saved list
+          location.reload();
+        }
+      }).catch(function(){btn.disabled=false;});
+    });
+  });
+}
+
+// Remove saved source
+document.querySelectorAll('.remove-source-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var sid = btn.dataset.sourceId;
+    fetch('/projects/' + projectId + '/sources/', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-CSRFToken':getCsrf()},
+      body: JSON.stringify({source_id: sid, action:'remove'})
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.data){ var card = document.getElementById('saved-' + sid); if(card) card.remove(); }
+    });
+  });
+});
+
+// Generate topics
+var genBtn = document.getElementById('generate-btn');
+if(genBtn){
+  genBtn.addEventListener('click', function(){
+    genBtn.disabled = true; genBtn.textContent = 'Ģenerē...';
+    fetch('/research/' + projectId + '/queue-topics/', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-CSRFToken':getCsrf()},
+      body: JSON.stringify({expected_revision: {{ project.context_revision }} })
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.data && d.data.job_id){
+        // Add job poller
+        var div = document.createElement('div');
+        div.className = 'job-status job-status--queued';
+        div.dataset.jobId = d.data.job_id;
+        div.dataset.projectId = projectId;
+        div.dataset.reloadOnDone = '1';
+        div.textContent = 'Gaida apstrādi';
+        document.getElementById('topic-panel').prepend(div);
+        window.startJobPoll(div);
+      }
+    }).catch(function(){genBtn.disabled=false;genBtn.textContent='Ģenerēt priekšlikumus';});
+  });
+}
+
+// Save draft from proposal
+document.querySelectorAll('.save-draft-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    btn.disabled = true;
+    fetch('/projects/' + projectId + '/draft/', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-CSRFToken':getCsrf()},
+      body: JSON.stringify({
+        title: btn.dataset.title,
+        hypothesis: btn.dataset.hypothesis,
+        rationale: btn.dataset.rationale,
+        expected_revision: draftRevision
+      })
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.data){ window.location.reload(); }
+      else { btn.disabled=false; alert(d.error && d.error.message_lv || 'Kļūda'); }
+    }).catch(function(){btn.disabled=false;});
+  });
+});
+
+// Edit draft
+var editDraftBtn = document.getElementById('edit-draft-btn');
+var cancelDraftBtn = document.getElementById('cancel-draft-btn');
+var draftView = document.getElementById('draft-view');
+var draftEditForm = document.getElementById('draft-edit-form');
+var draftErr = document.getElementById('draft-error');
+if(editDraftBtn){
+  editDraftBtn.addEventListener('click', function(){ draftView.classList.add('hidden'); draftEditForm.classList.remove('hidden'); });
+  cancelDraftBtn.addEventListener('click', function(){ draftView.classList.remove('hidden'); draftEditForm.classList.add('hidden'); });
+  document.getElementById('save-draft-edit-btn').addEventListener('click', function(){
+    var btn = this; btn.disabled=true; draftErr.classList.add('hidden');
+    fetch('/projects/'+projectId+'/draft/',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-CSRFToken':getCsrf()},
+      body:JSON.stringify({
+        title: document.getElementById('de-title').value,
+        hypothesis: document.getElementById('de-hypothesis').value,
+        rationale: document.getElementById('de-rationale').value,
+        expected_revision: draftRevision
+      })
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.data){window.location.reload();}
+      else{draftErr.textContent=d.error&&d.error.message_lv||'Kļūda.';draftErr.classList.remove('hidden');btn.disabled=false;}
+    }).catch(function(){draftErr.textContent='Pieprasījuma kļūda.';draftErr.classList.remove('hidden');btn.disabled=false;});
+  });
+}
+
+// Submit topic
+var submitBtn = document.getElementById('submit-topic-btn');
+if(submitBtn){
+  submitBtn.addEventListener('click', function(){
+    if(!confirm('Iesniegt šo tēmas melnrakstu vadītāja pārskatīšanai?')) return;
+    submitBtn.disabled=true;
+    fetch('/projects/'+projectId+'/submit/',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-CSRFToken':getCsrf()},
+      body:JSON.stringify({draft_revision: draftRevision})
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.data){window.location.href='/supervision/'+projectId+'/';}
+      else{alert(d.error&&d.error.message_lv||'Kļūda.');submitBtn.disabled=false;}
+    }).catch(function(){submitBtn.disabled=false;});
+  });
+}
+
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// Attach search listeners
+if(searchInput){
+  searchInput.addEventListener('input', doSearch);
+  ['filter-year-from','filter-year-to','filter-language','filter-type'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.addEventListener('change', doSearch);
+  });
+}
+})();
+</script>
+{% endblock %}

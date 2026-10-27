@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}BakaBaka{% endblock %}</title>
+  <link rel="stylesheet" href="/static/app.css">
+  {% block extra_head %}{% endblock %}
+</head>
+<body class="{% if user.is_authenticated %}app-layout{% else %}auth-layout{% endif %}">
+
+  {% if user.is_authenticated %}
+  <div class="demo-banner" role="status" aria-live="polite">
+    <span>⚠ Demonstrācijas vide — sintētiski dati, nav saistīts ar universitāti</span>
+  </div>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/projects/" class="site-logo" aria-label="BakaBaka sākums">
+        <span class="logo-mark">BB</span>
+        <span class="logo-name">BakaBaka</span>
+      </a>
+      {% block project_title %}{% endblock %}
+      <div class="header-user">
+        <span class="user-name">{{ user.get_full_name|default:user.username }}</span>
+        <span class="user-role badge badge--{{ user.role }}">
+          {% if user.role == "student" %}Students
+          {% elif user.role == "supervisor" %}Vadītājs
+          {% else %}Administrators{% endif %}
+        </span>
+        {% if user.role == "supervisor" %}
+        <a href="{% url 'supervision:inbox' %}" class="btn btn--ghost btn--small">Mani projekti</a>
+        {% endif %}
+        <form method="post" action="/logout/" style="display:inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn--ghost btn--small">Iziet</button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  {% if current_project %}
+  <nav class="project-nav" aria-label="Projekta navigācija">
+    <div class="container">
+      <ul class="nav-list">
+        <li><a href="{% url 'projects:detail' current_project.id %}"
+               class="nav-link {% block nav_overview %}{% endblock %}">Pārskats</a></li>
+        <li><a href="{% url 'recommendations:research' current_project.id %}"
+               class="nav-link {% block nav_research %}{% endblock %}">Tēma un avoti</a></li>
+        <li><a href="{% url 'supervision:index' current_project.id %}"
+               class="nav-link {% block nav_supervision %}{% endblock %}">Vadītājs un atsauksmes</a></li>
+        <li><a href="{% url 'documents:index' current_project.id %}"
+               class="nav-link {% block nav_documents %}{% endblock %}">Darba versijas un pārbaudes</a></li>
+      </ul>
+    </div>
+  </nav>
+  {% endif %}
+  {% endif %}
+
+  <main class="main-content" id="main">
+    <div class="container">
+      {% if messages %}
+        <div class="flash-messages" aria-live="polite" aria-atomic="false">
+          {% for msg in messages %}
+            <div class="alert alert--{{ msg.tags|default:'info' }}" role="alert">
+              {{ msg }}
+              <button type="button" class="alert-close" aria-label="Aizvērt" onclick="this.parentElement.remove()">×</button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+
+  {% if user.is_authenticated %}
+  <footer class="site-footer">
+    <div class="container">
+      <p>BakaBaka demonstrācijas prototips — nav piesaistīts universitātes sistēmām</p>
+    </div>
+  </footer>
+  {% endif %}
+
+  <script>
+  // Job status polling: attach data-job-id to any element to auto-poll
+  (function() {
+    var pollers = {};
+    function pollJob(el) {
+      var jobId = el.dataset.jobId;
+      var projectId = el.dataset.projectId || '';
+      if (!jobId || pollers[jobId]) return;
+      pollers[jobId] = setInterval(function() {
+        fetch('/api/jobs/' + jobId + '/status/?project_id=' + projectId, {
+          headers: {'X-Requested-With': 'XMLHttpRequest'}
+        }).then(function(r) { return r.json(); }).then(function(data) {
+          var state = data.state || data.error;
+          var label = {'queued':'Gaida apstrādi','running':'Notiek apstrāde',
+            'succeeded':'Pabeigts','failed':'Neizdevās'}[state] || state;
+          el.textContent = label;
+          el.className = 'job-status job-status--' + state;
+          if (state === 'succeeded' || state === 'failed' || state === 'cancelled') {
+            clearInterval(pollers[jobId]);
+            delete pollers[jobId];
+            if (state === 'succeeded' && el.dataset.reloadOnDone) {
+              setTimeout(function() { window.location.reload(); }, 800);
+            }
+          }
+        }).catch(function() {});
+      }, 2000);
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('[data-job-id]').forEach(pollJob);
+    });
+    window.startJobPoll = pollJob;
+  })();
+
+  // CSRF token helper for fetch
+  function getCsrf() {
+    var m = document.cookie.match(/csrftoken=([^;]+)/);
+    return m ? m[1] : '';
+  }
+  window.getCsrf = getCsrf;
+  </script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

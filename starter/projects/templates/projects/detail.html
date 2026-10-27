@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% load tz %}
+{% block title %}{{ project.title }} — BakaBaka{% endblock %}
+{% block nav_overview %}active{% endblock %}
+
+{% block project_title %}
+<span class="header-project-title">{{ project.title|truncatechars:40 }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <a href="{% url 'projects:overview' %}" class="breadcrumb">← Visi projekti</a>
+    <h1 class="page-title">{{ project.title }}</h1>
+  </div>
+  {% if request.user.role == "student" %}
+  <button type="button" class="btn btn--secondary btn--small" id="edit-context-btn">Rediģēt</button>
+  {% endif %}
+</div>
+
+<div class="overview-grid">
+
+  <!-- Context / Idea card -->
+  <div class="card overview-main-card">
+    <div id="view-context">
+      <div class="card-section">
+        <h2 class="section-heading">Projekta ideja</h2>
+        <p class="idea-text">{{ project.idea }}</p>
+        {% if project.keywords %}
+        <div class="keyword-tags mt-8">
+          {% for kw in project.keywords %}<span class="keyword-tag">{{ kw }}</span>{% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div id="edit-context-form" class="hidden">
+      <div class="card-section">
+        <h2 class="section-heading">Rediģēt kontekstu</h2>
+        <div class="form-group">
+          <label class="form-label" for="ctx-title">Nosaukums</label>
+          <input type="text" id="ctx-title" class="form-input" value="{{ project.title }}" maxlength="300">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="ctx-idea">Ideja</label>
+          <textarea id="ctx-idea" class="form-textarea" rows="3">{{ project.idea }}</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="ctx-keywords">Atslēgvārdi</label>
+          <input type="text" id="ctx-keywords" class="form-input" value="{{ project.keywords|join:', ' }}">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn--secondary btn--small" id="cancel-context-btn">Atcelt</button>
+          <button type="button" class="btn btn--primary btn--small" id="save-context-btn"
+                  data-project-id="{{ project.id }}" data-revision="{{ project.context_revision }}">Saglabāt</button>
+        </div>
+        <div id="context-error" class="alert alert--error hidden"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status sidebar -->
+  <div class="overview-sidebar">
+
+    <!-- Topic status -->
+    <div class="card status-card">
+      <h3 class="status-card-title">Tēma un avoti</h3>
+      <div class="status-row">
+        {% if latest_submission %}
+          <span class="badge badge--{{ submission_state }}">
+            {% if submission_state == 'submitted' %}Iesniegta pārskatīšanai
+            {% elif submission_state == 'approved' %}Apstiprināta
+            {% elif submission_state == 'changes_requested' %}Nepieciešami labojumi
+            {% elif submission_state == 'rejected' %}Noraidīta
+            {% elif submission_state == 'superseded' %}Aizstāta
+            {% else %}{{ submission_state }}{% endif %}
+          </span>
+        {% elif draft and draft.title %}
+          <span class="badge badge--draft">Melnraksts sagatavots</span>
+        {% else %}
+          <span class="badge badge--muted">Nav uzsākts</span>
+        {% endif %}
+      </div>
+      <div class="status-meta">{{ source_count }} saglabāti avoti</div>
+      <a href="{% url 'recommendations:research' project.id %}" class="btn btn--secondary btn--small mt-8">
+        {% if not draft or not draft.title %}Sākt darbu{% else %}Apskatīt{% endif %}
+      </a>
+    </div>
+
+    <!-- Supervisor status -->
+    <div class="card status-card">
+      <h3 class="status-card-title">Vadītājs</h3>
+      {% if active_assignment %}
+        <div class="status-row">
+          <span class="badge badge--{{ active_assignment.state }}">
+            {% if active_assignment.state == 'requested' %}Pieprasījums nosūtīts
+            {% elif active_assignment.state == 'accepted' %}Sadarbība apstiprināta
+            {% endif %}
+          </span>
+        </div>
+        <div class="status-meta">
+          {{ active_assignment.supervisor.get_full_name|default:active_assignment.supervisor.username }}
+        </div>
+      {% else %}
+        <span class="badge badge--muted">Nav pieprasīts</span>
+      {% endif %}
+      <a href="{% url 'supervision:index' project.id %}" class="btn btn--secondary btn--small mt-8">Apskatīt</a>
+    </div>
+
+    <!-- Document status -->
+    <div class="card status-card">
+      <h3 class="status-card-title">Darba versijas</h3>
+      {% if latest_version %}
+        <div class="status-row">
+          {% if latest_check %}
+            <span class="badge badge--{{ latest_check.state }}">
+              {% if latest_check.state == 'succeeded' %}Pārbaude pabeigta
+              {% elif latest_check.state == 'running' %}Pārbauda
+              {% elif latest_check.state == 'queued' %}Gaida
+              {% elif latest_check.state == 'failed' %}Pārbaude neizdevās
+              {% else %}{{ latest_check.state }}{% endif %}
+            </span>
+          {% else %}
+            <span class="badge badge--muted">Nav pārbaudīts</span>
+          {% endif %}
+        </div>
+        <div class="status-meta">v{{ latest_version.number }}: {{ latest_version.original_filename }}</div>
+      {% else %}
+        <span class="badge badge--muted">Nav augšupielādēts</span>
+      {% endif %}
+      <a href="{% url 'documents:index' project.id %}" class="btn btn--secondary btn--small mt-8">
+        {% if not latest_version %}Augšupielādēt{% else %}Apskatīt{% endif %}
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function() {
+  var editBtn = document.getElementById('edit-context-btn');
+  var cancelBtn = document.getElementById('cancel-context-btn');
+  var saveBtn = document.getElementById('save-context-btn');
+  var viewDiv = document.getElementById('view-context');
+  var formDiv = document.getElementById('edit-context-form');
+  var errDiv = document.getElementById('context-error');
+  if (!editBtn) return;
+
+  editBtn.addEventListener('click', function() {
+    viewDiv.classList.add('hidden');
+    formDiv.classList.remove('hidden');
+    editBtn.classList.add('hidden');
+  });
+  cancelBtn.addEventListener('click', function() {
+    viewDiv.classList.remove('hidden');
+    formDiv.classList.add('hidden');
+    editBtn.classList.remove('hidden');
+  });
+  saveBtn.addEventListener('click', function() {
+    var projectId = saveBtn.dataset.projectId;
+    var revision = parseInt(saveBtn.dataset.revision);
+    var kws = document.getElementById('ctx-keywords').value.split(',').map(function(s){return s.trim();}).filter(Boolean);
+    errDiv.classList.add('hidden');
+    saveBtn.disabled = true;
+    fetch('/projects/' + projectId + '/context/', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','X-CSRFToken': getCsrf()},
+      body: JSON.stringify({
+        title: document.getElementById('ctx-title').value.trim(),
+        idea: document.getElementById('ctx-idea').value.trim(),
+        keywords: kws,
+        expected_revision: revision
+      })
+    }).then(function(r){return r.json();}).then(function(data){
+      if (data.error) {
+        errDiv.textContent = data.error.message_lv || 'Kļūda saglabājot.';
+        errDiv.classList.remove('hidden');
+      } else {
+        window.location.reload();
+      }
+    }).catch(function(){
+      errDiv.textContent = 'Pieprasījuma kļūda.';
+      errDiv.classList.remove('hidden');
+    }).finally(function(){ saveBtn.disabled = false; });
+  });
+})();
+</script>
+{% endblock %}

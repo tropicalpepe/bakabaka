@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Ienākošie pieprasījumi — BakaBaka{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1 class="page-title">Mani projekti</h1>
+  <a href="{% url 'supervision:inbox' %}" class="btn btn--secondary btn--small">Atsvaidzināt</a>
+</div>
+
+{% if not enriched %}
+<div class="empty-state">
+  <div class="empty-icon">📬</div>
+  <h2>Nav pieprasījumu</h2>
+  <p>Studenti vēl nav sūtījuši pieprasījumus.</p>
+</div>
+{% else %}
+<div class="project-list">
+{% for assignment, project in enriched %}
+{% if project %}
+<div class="card">
+  <div class="card-section">
+    <div class="assignment-header">
+      <h3 class="assignment-title">{{ project.title }}</h3>
+      <span class="badge badge--{{ assignment.state }}">
+        {% if assignment.state == "requested" %}Jauns pieprasījums
+        {% elif assignment.state == "accepted" %}Pieņemts
+        {% elif assignment.state == "declined" %}Noraidīts
+        {% elif assignment.state == "cancelled" %}Atcelts
+        {% endif %}
+      </span>
+    </div>
+    <p class="assignment-idea">{{ project.idea|truncatechars:150 }}</p>
+    <p class="form-hint">
+      No: {{ assignment.requested_by.get_full_name|default:assignment.requested_by.username }} ·
+      {{ assignment.requested_at|date:"d.m.Y H:i" }}
+    </p>
+    <div class="form-actions mt-8">
+      <a href="{% url 'supervision:index' project.id %}" class="btn btn--primary btn--small">Apskatīt projektu</a>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endfor %}
+</div>
+{% endif %}
+
+<style>
+.assignment-header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.assignment-title{font-size:1rem;font-weight:600}
+.assignment-idea{font-size:.875rem;color:var(--muted);margin-bottom:6px}
+.mt-8{margin-top:8px}
+</style>
+{% endblock %}

@@ -1,0 +1,83 @@
+[
+  {
+    "id": 1,
+    "username": "anna",
+    "password": "BakaDemo-2026!",
+    "role": "student",
+    "first_name": "Anna",
+    "last_name": "Liepa",
+    "synthetic": true
+  },
+  {
+    "id": 2,
+    "username": "janis",
+    "password": "BakaDemo-2026!",
+    "role": "student",
+    "first_name": "Jānis",
+    "last_name": "Kalns",
+    "synthetic": true
+  },
+  {
+    "id": 11,
+    "username": "ilze",
+    "password": "BakaDemo-2026!",
+    "role": "supervisor",
+    "first_name": "Ilze",
+    "last_name": "Ozola",
+    "synthetic": true
+  },
+  {
+    "id": 12,
+    "username": "martins",
+    "password": "BakaDemo-2026!",
+    "role": "supervisor",
+    "first_name": "Mārtiņš",
+    "last_name": "Bērziņš",
+    "synthetic": true
+  },
+  {
+    "id": 13,
+    "username": "laura",
+    "password": "BakaDemo-2026!",
+    "role": "supervisor",
+    "first_name": "Laura",
+    "last_name": "Priede",
+    "synthetic": true
+  },
+  {
+    "id": 14,
+    "username": "peteris",
+    "password": "BakaDemo-2026!",
+    "role": "supervisor",
+    "first_name": "Pēteris",
+    "last_name": "Lapa",
+    "synthetic": true
+  },
+  {
+    "id": 15,
+    "username": "eva",
+    "password": "BakaDemo-2026!",
+    "role": "supervisor",
+    "first_name": "Eva",
+    "last_name": "Ziediņa",
+    "synthetic": true
+  },
+  {
+    "id": 16,
+    "username": "andris",
+    "password": "BakaDemo-2026!",
+    "role": "supervisor",
+    "first_name": "Andris",
+    "last_name": "Krasts",
+    "synthetic": true
+  },
+  {
+    "id": 99,
+    "username": "admin",
+    "password": "BakaDemo-2026!",
+    "role": "admin",
+    "first_name": "Demo",
+    "last_name": "Administrators",
+    "synthetic": true
+  }
+]
